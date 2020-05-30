@@ -1,0 +1,409 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: black;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#selectOptionPersonalPrj {
+	width: 200px;
+	margin: left;
+	display: inline-block;
+	border: none;
+	background: #f1f1f1;
+	position: relative;
+	outline: none;
+	-webkit-touch-callout: none;	/* iOS Safari */
+	-webkit-user-select: none;		/* Safari */
+	-khtml-user-select: none;		/* Konqueror HTML */
+	-moz-user-select: none;			/* Firefox */
+	-ms-user-select: none;			/* Internet Explorer/Edge */
+	user-select: none;				/* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+#selectOptionPersonalPrj div {
+	color: black;
+	display: block;
+}
+
+#selectOptionPersonalPrj div#optionsPersonalPrj {
+	position: absolute;
+	background: #f1f1f1;
+	width: 100%;
+}
+
+#selectOptionPersonalPrj div#selectedPersonalPrj, #selectOptionPersonalPrj div.optionPersonalPrj {
+	padding: 5px 12px;
+	border: 1px solid transparent;
+	border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+}
+
+#selectOptionPersonalPrj div#optionsPersonalPrj.close {
+	display: none;
+	height: 0;
+	transition: height 5000ms ease-in-out;
+}
+
+#selectOptionPersonalPrj div#optionsPersonalPrj.open {
+	display: block;
+	height: auto;
+	overflow: hidden;
+}
+
+#selectOptionPersonalPrj div#selectedPersonalPrj:hover, #selectOptionPersonalPrj div.optionPersonalPrj:hover {
+	cursor: pointer;
+	outline: none;
+}
+
+#selectOptionPersonalPrj div.optionPersonalPrj:hover {
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+#selectOptionPersonalPrj div#selectedPersonalPrj:after {
+	position: absolute;
+	content: "";
+	top: 60%;
+	right: 1em;
+	width: 0;
+	height: 0;
+	transform: translateY(-50%);
+	border: 6px solid transparent;
+	border-color: #000000 transparent transparent transparent;
+}
+
+#selectOptionPersonalPrj div#selectedPersonalPrj.open:after {
+	border-color: transparent transparent #000000 transparent;
+	top: 35%;
+	transform: translateY(-50%);
+}
+
+#selectOptionPrj {
+	width: 100%;
+	margin: 5px 0 22px 0;
+	display: inline-block;
+	border: none;
+	background: #f1f1f1;
+	position: relative;
+	outline: none;
+	-webkit-touch-callout: none;	/* iOS Safari */
+	-webkit-user-select: none;		/* Safari */
+	-khtml-user-select: none;		/* Konqueror HTML */
+	-moz-user-select: none;			/* Firefox */
+	-ms-user-select: none;			/* Internet Explorer/Edge */
+	user-select: none;				/* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+#selectOptionPrj div {
+	color: black;
+	display: block;
+}
+
+#selectOptionPrj div#optionsPrj {
+	position: absolute;
+	background: #f1f1f1;
+	width: 100%;
+}
+
+#selectOptionPrj div#selectedPrj, #selectOptionPrj div.optionPrj {
+	padding: 5px 12px;
+	border: 1px solid transparent;
+	border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+}
+
+#selectOptionPrj div#optionsPrj.close {
+	display: none;
+	height: 0;
+	transition: height 5000ms ease-in-out;
+}
+
+#selectOptionPrj div#optionsPrj.open {
+	display: block;
+	height: auto;
+	overflow: hidden;
+}
+
+#selectOptionPrj div#selectedPrj:hover, #selectOptionPrj div.optionPrj:hover {
+	cursor: pointer;
+	outline: none;
+}
+
+#selectOptionPrj div.optionPrj:hover {
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+#selectOptionPrj div#selectedPrj:after {
+	position: absolute;
+	content: "";
+	top: 60%;
+	right: 1em;
+	width: 0;
+	height: 0;
+	transform: translateY(-50%);
+	border: 6px solid transparent;
+	border-color: #000000 transparent transparent transparent;
+}
+
+#selectOptionPrj div#selectedPrj.open:after {
+	border-color: transparent transparent #000000 transparent;
+	top: 35%;
+	transform: translateY(-50%);
+}
+
+#selectOptionDip {
+	width: 100%;
+	margin: 5px 0 22px 0;
+	display: inline-block;
+	border: none;
+	background: #f1f1f1;
+	position: relative;
+	outline: none;
+	-webkit-touch-callout: none;	/* iOS Safari */
+	-webkit-user-select: none;		/* Safari */
+	-khtml-user-select: none;		/* Konqueror HTML */
+	-moz-user-select: none;			/* Firefox */
+	-ms-user-select: none;			/* Internet Explorer/Edge */
+	user-select: none;				/* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+#selectOptionDip div {
+	color: black;
+	display: block;
+}
+
+#selectOptionDip div#optionsDip {
+	position: absolute;
+	background: #f1f1f1;
+	width: 100%;
+}
+
+#selectOptionDip div#selectedDip, #selectOptionDip div.optionDip {
+	padding: 5px 12px;
+	border: 1px solid transparent;
+	border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+}
+
+#selectOptionDip div#optionsDip.close {
+	display: none;
+	height: 0;
+	transition: height 5000ms ease-in-out;
+}
+
+#selectOptionDip div#optionsDip.open {
+	display: block;
+	height: auto;
+	overflow: hidden;
+}
+
+#selectOptionDip div#selectedDip:hover, #selectOptionDip div.optionDip:hover {
+	cursor: pointer;
+	outline: none;
+}
+
+#selectOptionDip div.optionDip:hover {
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+#selectOptionDip div#selectedDip:after {
+	position: absolute;
+	content: "";
+	top: 60%;
+	right: 1em;
+	width: 0;
+	height: 0;
+	transform: translateY(-50%);
+	border: 6px solid transparent;
+	border-color: #000000 transparent transparent transparent;
+}
+
+#selectOptionDip div#selectedDip.open:after {
+	border-color: transparent transparent #000000 transparent;
+	top: 35%;
+	transform: translateY(-50%);
+}
+
+/* Add padding to containers */
+.container {
+  padding: 16px;
+  background-color: white;
+}
+
+/* Full-width input fields */
+input {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: #f1f1f1;
+}
+
+input:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Overwrite default styles of hr */
+hr {
+  border: 1px solid #f1f1f1;
+  margin-bottom: 25px;
+}
+
+/* Set a style for the submit button */
+.registerbtn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  opacity: 0.9;
+}
+
+.registerbtn:hover {
+  opacity: 1;
+}
+
+/* Set a style for the submit button */
+.loginbtn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100px;
+  opacity: 0.9;
+}
+
+.calendarbtn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px 20px;
+  margin: left;
+  border: none;
+  cursor: pointer;
+  width: 100px;
+  opacity: 0.9;
+}
+
+.projectbtn {
+   background-color: #4CAF50;
+   color: white;
+   margin-left: 20px;
+   border: none;
+   cursor: pointer;
+   width: 100px;
+   opacity: 0.9;
+   position: absolute;;
+}
+
+
+.loginbtn:hover {
+  opacity: 1;
+}
+
+.calendarbtn:hover {
+  opacity: 1;
+}
+
+/* Add a blue text color to links */
+a {
+  color: dodgerblue;
+}
+
+/* Set a grey background color and center the text of the "sign in" section */
+.signin {
+  background-color: #f1f1f1;
+  text-align: center;
+}
+
+/*Calendario*/
+
+* {box-sizing: border-box;}
+ul {list-style-type: none;}
+body {font-family: Verdana, sans-serif;}
+
+.month {
+  padding: 70px 25px;
+  width: 100%;
+  background: #1abc9c;
+  text-align: center;
+}
+
+.month ul {
+  margin: 0;
+  padding: 0;
+}
+
+.month ul li {
+  color: white;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+.month .prev {
+  float: left;
+  padding-top: 10px;
+}
+
+.month .next {
+  float: right;
+  padding-top: 10px;
+}
+
+.weekdays {
+  margin: 0;
+  padding: 10px 0;
+  background-color: #ddd;
+}
+
+.weekdays li {
+  display: inline-block;
+  width: 13.6%;
+  color: #666;
+  text-align: center;
+}
+
+.days {
+  padding: 10px 0;
+  background: #eee;
+  margin: 0;
+}
+
+.days li {
+  list-style-type: none;
+  display: inline-block;
+  width: 13.6%;
+  text-align: center;
+  margin-bottom: 5px;
+  font-size:12px;
+  color: #777;
+}
+
+.days li .active {
+  padding: 5px;
+  background: #1abc9c;
+  color: white !important
+}
+
+h2 {
+  color: red;
+}
+
+/* Add media queries for smaller screens */
+@media screen and (max-width:720px) {
+  .weekdays li, .days li {width: 13.1%;}
+}
+
+@media screen and (max-width: 420px) {
+  .weekdays li, .days li {width: 12.5%;}
+  .days li .active {padding: 2px;}
+}
+
+@media screen and (max-width: 290px) {
+  .weekdays li, .days li {width: 12.2%;}
+}
