@@ -5,14 +5,16 @@ import java.sql.SQLException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import eu.polimi.tiw.bean.RegisterBean;
-import eu.polimi.tiw.businesslogic.FunctionRegister;
-import eu.polimi.tiw.common.AppCrash;
-import eu.polimi.tiw.populator.RegisterBeanPopulator;
+import eu.polimi.tiw.bean.*;
+import eu.polimi.tiw.businesslogic.*;
+import eu.polimi.tiw.common.*;
+import eu.polimi.tiw.populator.*;
 
+@WebServlet("/register")
 public class RegisterServlet extends GenericServlet {
 
 	private static final long serialVersionUID = 1L;
@@ -22,9 +24,9 @@ public class RegisterServlet extends GenericServlet {
 
 		RequestDispatcher disp;
 		try {
-			RegisterBean regBean = RegisterBeanPopulator.populateRegister(request);
+			EmployeeBean employeeBean = EmployeeBeanPopulator.populateRegister(request);
 			FunctionRegister functionRegistration = new FunctionRegister();
-			functionRegistration.register(regBean);
+			functionRegistration.register(employeeBean);
 			disp = request.getRequestDispatcher("registrationsuccessfull.jsp");
 			disp.forward(request, response);
 
@@ -39,4 +41,19 @@ public class RegisterServlet extends GenericServlet {
 		}
 	}
 
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		EmployeeBean employeeBean = new EmployeeBean();
+		employeeBean.setEmail(request.getParameter(MOConstants.EMAIL));
+		FunctionRegister registerFunction = new FunctionRegister();
+		try {
+			boolean employeeAlreadyRegistered = registerFunction.isEmployeeAlreadyRegistered(employeeBean);
+			response.setContentType("application/json");
+			response.getWriter().write(String.valueOf(employeeAlreadyRegistered));
+		} catch (AppCrash | SQLException e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.setContentType("application/json");
+			response.getWriter().write(String.valueOf(true));
+		}
+	}
 }

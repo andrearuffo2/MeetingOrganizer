@@ -1,0 +1,7 @@
+/target/
+.idea/
+.settings/
+.project
+MeetingOrganizer.iml
+src/main/java/eu/polimi/tiw/controller/HomeTest.java
+.classpath

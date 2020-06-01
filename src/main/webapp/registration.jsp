@@ -7,57 +7,41 @@
   <script src="js/script.js"></script>
 </head>
 
-<body onload="start()">
+<body>
 
 <form action="register" method="POST" onsubmit="return Validate()" name="vForm">
   <div class="container">
     <h1>Register </h1>
     <p>Please fill in this form to create an account.</p>
     <hr>
-  
-  	<label for="name"><b>Nome</b></label>
-    <input type="text" placeholder="Name" name="name" required>
-    
+
+    <label for="name"><b>Nome</b></label>
+    <input type="text" placeholder="Name" name="name" onfocus="hideError('errorName')" onfocusout="validateName('errorName')">
+    <div class="errorDiv" id="errorName"></div>
+
     <label for="surname"><b>Cognome</b></label>
-    <input type="text" placeholder="Surname" name="surname" required>
+    <input type="text" placeholder="Surname" name="surname" onfocus="hideError('errorSurname')" onfocusout="validateName('errorSurname')">
+    <div class="errorDiv" id="errorSurname"></div>
 
     <label for="email"><b>Email</b></label>
-    <input type="email" placeholder="Enter Email" name="email" required>
-    
-    <label for="Departments"><b>Departments</b></label>
-    
-    <div id="selectOptionDip">
-      <div id="selectedDip" onclick="openSelectDip()">....</div>
-      <div id="optionsDip" class="close">
-	      <c:forEach items="${departmentList}" var="department">
-	        <div class="optionDip">${department.idDipartimento} - ${department.nome}</div>
-	      </c:forEach>
-      </div>
-      <input id="selectedValueDip" type="hidden" name="selectedValueDip" required/>
-    </div>
-    
+    <input type="email" placeholder="Enter Email" name="email" onfocus="hideError('errorEmail')" onfocusout="validateEmail('errorEmail')">
+    <div class="errorDiv" id="errorEmail"></div>
+
     <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="psw" maxlength="8" required>
-    
-    <label for="Projects"><b>Projects</b></label>
-    
-    <div id="selectOptionPrj">
-      <div id="selectedPrj" onclick="openSelectPrj()">....</div>
-      <div id="optionsPrj" class="close">
-	      <c:forEach items="${projectList}" var="project">
-	        <div class="optionPrj">${project.idProgetto} - ${project.nome}</div>
-	      </c:forEach>
-      </div>
-      <input id="selectedValuePrj" type="hidden" name="selectedValuePrj" required/>
-    </div>
+    <input type="password" placeholder="Enter Password" name="psw" maxlength="15" onfocus="hideError('errorPsw')" onfocusout="validatePsw('errorPsw')">
+    <div class="errorDiv" id="errorPsw"></div>
+
+    <label for="confpsw"><b>Password</b></label>
+    <input type="password" placeholder="Retype Password" name="confpsw" maxlength="15" onfocus="hideError('errorConfirmPassword')" onfocusout="validateConfPsw('errorConfirmPassword')">
+    <div class="errorDiv" id="errorConfirmPassword"></div>
 
     <hr>
   </div>
   <button type="submit" class="registerbtn">Register</button>
   <div class="container signin">
-      <p>Already have an account? <a href="login.jsp">Sign in</a>.</p>
+    <p>Already have an account? <a href="login.jsp">Sign in</a>.</p>
   </div>
 </form>
-  
+
 </body>
 </html>

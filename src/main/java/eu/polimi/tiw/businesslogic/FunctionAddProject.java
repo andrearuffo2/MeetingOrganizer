@@ -3,7 +3,6 @@ package eu.polimi.tiw.businesslogic;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.postgresql.util.PSQLException;
 
 import eu.polimi.tiw.bean.ProjectUserBean;
 import eu.polimi.tiw.common.AppCrash;
@@ -19,12 +18,10 @@ import eu.polimi.tiw.repository.ProjectUserRepository;
 public class FunctionAddProject {
 
 	/**
-	 * @param registerBean
-	 * @param conn
 	 * @throws AppCrash
 	 * @throws SQLException
 	 */
-	public void registerUserProject(ProjectUserBean projectUserBean) throws AppCrash, SQLException, PSQLException {
+	public void registerUserProject(ProjectUserBean projectUserBean) throws AppCrash, SQLException {
 
 		Connection conn = DbConnection.getInstance().getConnection();
 		UserProjectDao userProjectDao = new UserProjectDao(conn);

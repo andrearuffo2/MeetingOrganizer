@@ -29,11 +29,11 @@ public class DbConnection {
 
 		Connection connection = null;
 		try {
-
+			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection(Config.getInstance().getProperty("db.url"),
 					Config.getInstance().getProperty("db.user"), Config.getInstance().getProperty("db.password"));
 
-		} catch (SQLException e) {
+		} catch (SQLException | ClassNotFoundException e) {
 			System.out.println("Connection failure.");
 			e.printStackTrace();
 		}

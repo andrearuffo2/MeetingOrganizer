@@ -10,65 +10,65 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import eu.polimi.tiw.bean.PersonalPageBean;
-import eu.polimi.tiw.bean.RegisterBean;
+import eu.polimi.tiw.bean.*;
 import eu.polimi.tiw.businesslogic.FunctionLogin;
-import eu.polimi.tiw.businesslogic.FunctionRetrieveRegisterData;
 import eu.polimi.tiw.common.AppCrash;
-import eu.polimi.tiw.populator.RegisterBeanPopulator;
-import eu.polimi.tiw.repository.ProjectRepository;
+import eu.polimi.tiw.populator.*;
+
 
 public class LoginServlet extends GenericServlet {
-
 	private static final long serialVersionUID = 1L;
-	private static final String COOKIE_NAME = "user";
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	public LoginServlet() {
+	}
 
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher disp;
 		try {
-			RegisterBean regBean = RegisterBeanPopulator.populateLogin(request);
+			EmployeeBean employeeBean = EmployeeBeanPopulator.populateLogin(request);
 			FunctionLogin functionLogin = new FunctionLogin();
-			FunctionRetrieveRegisterData functionRetrieveRegisterData = new FunctionRetrieveRegisterData();
-			functionLogin.searchUser(regBean);
-			List<PersonalPageBean> searchUsersProjects = functionLogin.searchUsersProjects(regBean);
-			List<ProjectRepository> retrieveProjectsDataForLoginPage = functionRetrieveRegisterData
-					.retrieveProjectsDataForLoginPage(searchUsersProjects);
-
+			functionLogin.searchEmployee(employeeBean);
+			List<MeetingBean> employeeActiveMeetings = functionLogin.searchEmployeeActiveMeetings(employeeBean);
 			boolean isPresentCookie = false;
-
 			if (request.getCookies() != null || request.getCookies().length != 0) {
-				for (Cookie cookie : request.getCookies()) {
-					if (COOKIE_NAME.equalsIgnoreCase(cookie.getName())) {
+				Cookie[] var8 = request.getCookies();
+				int var9 = var8.length;
+				int var10 = 0;
+
+				while(true) {
+					if (var10 >= var9) {
+						if (!isPresentCookie) {
+							Cookie loginCookie = new Cookie("user", String.valueOf(employeeBean.getEmployeeId()));
+							loginCookie.setMaxAge(1800);
+							response.addCookie(loginCookie);
+						}
+						break;
+					}
+
+					Cookie cookie = var8[var10];
+					if ("user".equalsIgnoreCase(cookie.getName())) {
 						isPresentCookie = true;
 						response.addCookie(cookie);
 					} else {
 						response.addCookie(cookie);
 					}
-				}
 
-				if (!isPresentCookie) {
-					Cookie loginCookie = new Cookie("user", String.valueOf(regBean.getIdUtente()));
-					// setting cookie to expiry in 30 mins
-					loginCookie.setMaxAge(30 * 60);
-					response.addCookie(loginCookie);
+					++var10;
 				}
 			}
 
-			request.setAttribute("usersprojects", searchUsersProjects);
-			request.setAttribute("projectList", retrieveProjectsDataForLoginPage);
+			request.setAttribute("meetingsList", employeeActiveMeetings);
 			disp = request.getRequestDispatcher("personalpage.jsp");
 			disp.forward(request, response);
-
-		} catch (AppCrash e) {
+		} catch (AppCrash var12) {
 			disp = request.getRequestDispatcher("login.jsp");
-			request.setAttribute("error", e.getMessage());
+			request.setAttribute("error", var12.getMessage());
 			disp.include(request, response);
-		} catch (SQLException e) {
-			request.setAttribute("errorMessage", e.getMessage());
+		} catch (SQLException var13) {
+			request.setAttribute("errorMessage", var13.getMessage());
 			disp = request.getRequestDispatcher("errorsystem.jsp");
 			disp.forward(request, response);
 		}
+
 	}
 }
