@@ -1,4 +1,4 @@
-var employeeList;
+
 
 // Da fare all'onload della pagina'
 function retrieveAllEmployee() {
@@ -21,4 +21,12 @@ function retrieveAllEmployee() {
         }
     }
     return responseBoolean;
+}
+
+
+function validateAndSubmit(){
+    var modal = document.getElementById("myModal");
+    var meetingTitle =
+    modal.style.display = "none";
+
 }
