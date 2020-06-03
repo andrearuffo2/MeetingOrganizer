@@ -1,12 +1,13 @@
 package eu.polimi.tiw.bean;
 
+import java.sql.*;
 import java.util.Date;
 
 public class MeetingBean {
     private int meetingId;
     private String meetingTitle;
     private Date meetingData;
-    private Date meetingHour;
+    private Time meetingHour;
     private int meetingsDuration;
     private int involvedEmployeeNumber;
     private String employeeUsername;
@@ -38,11 +39,11 @@ public class MeetingBean {
         this.meetingData = meetingData;
     }
 
-    public Date getMeetingHour() {
+    public Time getMeetingHour() {
         return this.meetingHour;
     }
 
-    public void setMeetingHour(Date meetingHour) {
+    public void setMeetingHour(Time meetingHour) {
         this.meetingHour = meetingHour;
     }
 

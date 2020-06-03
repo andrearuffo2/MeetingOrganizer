@@ -13,7 +13,13 @@ import eu.polimi.tiw.bean.*;
 import eu.polimi.tiw.businesslogic.*;
 import eu.polimi.tiw.common.*;
 import eu.polimi.tiw.populator.*;
+import eu.polimi.tiw.validation.*;
 
+/**
+ * @author Andrea Ruffo
+ * @since 0.0.1-SNAPSHOT
+ *
+ */
 @WebServlet("/register")
 public class RegisterServlet extends GenericServlet {
 
@@ -24,8 +30,14 @@ public class RegisterServlet extends GenericServlet {
 
 		RequestDispatcher disp;
 		try {
-			EmployeeBean employeeBean = EmployeeBeanPopulator.populateRegister(request);
+			EmployeeBean employeeBean = EmployeeBeanPopulator.getInstance().populateRegister(request);
+			Validator.validateRegistration(employeeBean);
 			FunctionRegister functionRegistration = new FunctionRegister();
+
+			//Check if user already exists
+			if(functionRegistration.isEmployeeAlreadyRegistered(employeeBean)){
+				throw new AppCrash("User already exists");
+			}
 			functionRegistration.register(employeeBean);
 			disp = request.getRequestDispatcher("registrationsuccessfull.jsp");
 			disp.forward(request, response);

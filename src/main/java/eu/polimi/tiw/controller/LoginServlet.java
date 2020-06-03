@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,8 +15,12 @@ import eu.polimi.tiw.bean.*;
 import eu.polimi.tiw.businesslogic.FunctionLogin;
 import eu.polimi.tiw.common.AppCrash;
 import eu.polimi.tiw.populator.*;
-
-
+/**
+ * @author Andrea Ruffo
+ * @since 0.0.1-SNAPSHOT
+ *
+ */
+@WebServlet("/login")
 public class LoginServlet extends GenericServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -25,10 +30,10 @@ public class LoginServlet extends GenericServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher disp;
 		try {
-			EmployeeBean employeeBean = EmployeeBeanPopulator.populateLogin(request);
 			FunctionLogin functionLogin = new FunctionLogin();
-			functionLogin.searchEmployee(employeeBean);
-			List<MeetingBean> employeeActiveMeetings = functionLogin.searchEmployeeActiveMeetings(employeeBean);
+			EmployeeBean employeeBean = functionLogin.searchEmployee(EmployeeBeanPopulator.populateLogin(request));
+			List<MeetingBean> employeeOwnActiveMeetings = functionLogin.searchEmployeeOwnActiveMeetings(employeeBean);
+			List<MeetingBean> employeeInvitedActiveMeetings = functionLogin.searchEmployeeInvitedActiveMeetings(employeeBean);
 			boolean isPresentCookie = false;
 			if (request.getCookies() != null || request.getCookies().length != 0) {
 				Cookie[] var8 = request.getCookies();
@@ -57,8 +62,12 @@ public class LoginServlet extends GenericServlet {
 				}
 			}
 
-			request.setAttribute("meetingsList", employeeActiveMeetings);
-			disp = request.getRequestDispatcher("personalpage.jsp");
+			//Meetings list made by him
+			request.setAttribute("meetingsOwnList", employeeOwnActiveMeetings);
+			request.setAttribute("employeeData", employeeBean);
+			//Meetings list were the employee was invited
+			request.setAttribute("meetingsInvitedList", employeeInvitedActiveMeetings);
+			disp = request.getRequestDispatcher("personalpage2.jsp");
 			disp.forward(request, response);
 		} catch (AppCrash var12) {
 			disp = request.getRequestDispatcher("login.jsp");

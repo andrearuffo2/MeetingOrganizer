@@ -22,6 +22,7 @@ function Validate()
 
 	if(responseBoolean == "true"){
 		alert("User with this email already exists");
+		return;
 	}
 
 	if(errorName.innerHTML != "" || errorSurname.innerHTML != "" || emailErr.innerHTML != "" || errorPsw.innerHTML != "" || errorConfirmPassword.innerHTML != ""){
@@ -48,6 +49,8 @@ function validateName(errorId)
 	var nameRGEX = /^[a-z ,.'-]+$/i;
 	if(!nameRGEX.test(name)){
 		err.innerHTML = "invalid name format";
+	} else {
+		err.innerHTML = "";
 	}
 }
 
@@ -58,6 +61,8 @@ function validateSurname(errorId)
 	var err = document.getElementById(errorId);
 	if(!surnameRGEX.test(surname)){
 		err.innerHTML = "invalid surname format";
+	}else {
+		err.innerHTML = "";
 	}
 }
 
@@ -69,7 +74,8 @@ function validateEmail(errorId)
 	if(!emailRGEX.test(email)){
 		err.innerHTML = "invalid email format";
 	} else {
-		var responseAjax = checkUserExists(email);
+		err.innerHTML = "";
+		checkUserExists(email);
 	}
 }
 
@@ -80,6 +86,8 @@ function validatePsw(errorId)
 	var err = document.getElementById(errorId);
 	if(!pswRGEX.test(psw)){
 		err.innerHTML = "Password must be min 6 chars, at least one letter and one number";
+	}else {
+		err.innerHTML = "";
 	}
 }
 
@@ -91,6 +99,8 @@ function validateConfPsw(errorId)
 	var err = document.getElementById(errorId);
 	if(confPsw == "" || confPsw != psw){
 		err.innerHTML = "confirm psw does not match the psw or is empty";
+	}else {
+		err.innerHTML = "";
 	}
 }
 

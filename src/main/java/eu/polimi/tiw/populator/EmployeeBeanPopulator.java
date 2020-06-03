@@ -4,13 +4,25 @@ import eu.polimi.tiw.bean.*;
 import eu.polimi.tiw.common.*;
 import org.apache.commons.lang3.*;
 
+import javax.security.auth.*;
 import javax.servlet.http.*;
+import java.sql.*;
 
 public class EmployeeBeanPopulator {
-    public EmployeeBeanPopulator() {
+    private static EmployeeBeanPopulator instance;
+
+    private EmployeeBeanPopulator() {
     }
 
-    public static EmployeeBean populateRegister(HttpServletRequest req) throws AppCrash {
+    public static EmployeeBeanPopulator getInstance() {
+        if (instance == null) {
+            instance = new EmployeeBeanPopulator();
+        }
+
+        return instance;
+    }
+
+    public static EmployeeBean populateRegister(HttpServletRequest req) {
 
         String name = req.getParameter(MOConstants.NAME);
         String surname = req.getParameter(MOConstants.SURNAME);
@@ -26,15 +38,26 @@ public class EmployeeBeanPopulator {
         return toPopulate;
     }
 
-    public static EmployeeBean populateLogin(HttpServletRequest req) throws AppCrash {
+    public static EmployeeBean populateLogin(HttpServletRequest req) {
         EmployeeBean toPopulate = new EmployeeBean();
-        toPopulate.setEmail(req.getParameter("email"));
-        toPopulate.setPassKey(req.getParameter("psw"));
-        if (StringUtils.isNotEmpty(req.getParameter("refresh"))) {
-            toPopulate.setEmployeeId(Integer.parseInt(req.getParameter("userId")));
+        toPopulate.setEmail(req.getParameter(MOConstants.EMAIL));
+        toPopulate.setPassKey(req.getParameter(MOConstants.PASSWORD));
+        if (StringUtils.isNotEmpty(req.getParameter(MOConstants.REFRESH))) {
+            //TODO da verificare
+            toPopulate.setEmployeeId(Integer.parseInt(req.getParameter(MOConstants.EMPLOYEE_ID)));
             toPopulate.setRefreshPage(true);
         }
 
+        return toPopulate;
+    }
+
+    public static EmployeeBean populateBean(ResultSet resultSet) throws SQLException {
+        EmployeeBean toPopulate = new EmployeeBean();
+        toPopulate.setEmployeeId(resultSet.getInt(MOConstants.EMPLOYEE_ID));
+        toPopulate.setName(resultSet.getString(MOConstants.NAME_DB));
+        toPopulate.setSurname(resultSet.getString(MOConstants.SURNAME_DB));
+        toPopulate.setEmail(resultSet.getString(MOConstants.EMAIL));
+        toPopulate.setPassKey(resultSet.getString(MOConstants.PASSKEY_DB));
         return toPopulate;
     }
 }

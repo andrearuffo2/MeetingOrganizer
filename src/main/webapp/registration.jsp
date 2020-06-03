@@ -9,30 +9,30 @@
 
 <body>
 
-<form action="register" method="POST" onsubmit="return Validate()" name="vForm">
+<form action="register" method="POST" onsubmit="return Validate()" name="vForm" autocomplete="off">
   <div class="container">
     <h1>Register </h1>
     <p>Please fill in this form to create an account.</p>
     <hr>
 
     <label for="name"><b>Nome</b></label>
-    <input type="text" placeholder="Name" name="name" onfocus="hideError('errorName')" onfocusout="validateName('errorName')">
+    <input type="text" placeholder="Name" name="name" onblur="validateName('errorName')">
     <div class="errorDiv" id="errorName"></div>
 
     <label for="surname"><b>Cognome</b></label>
-    <input type="text" placeholder="Surname" name="surname" onfocus="hideError('errorSurname')" onfocusout="validateName('errorSurname')">
+    <input type="text" placeholder="Surname" name="surname" onblur="validateName('errorSurname')">
     <div class="errorDiv" id="errorSurname"></div>
 
     <label for="email"><b>Email</b></label>
-    <input type="email" placeholder="Enter Email" name="email" onfocus="hideError('errorEmail')" onfocusout="validateEmail('errorEmail')">
+    <input type="email" placeholder="Enter Email" name="email"  onblur="validateEmail('errorEmail')">
     <div class="errorDiv" id="errorEmail"></div>
 
     <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="psw" maxlength="15" onfocus="hideError('errorPsw')" onfocusout="validatePsw('errorPsw')">
+    <input type="password" placeholder="Enter Password" name="psw" maxlength="15"  onblur="validatePsw('errorPsw')">
     <div class="errorDiv" id="errorPsw"></div>
 
     <label for="confpsw"><b>Password</b></label>
-    <input type="password" placeholder="Retype Password" name="confpsw" maxlength="15" onfocus="hideError('errorConfirmPassword')" onfocusout="validateConfPsw('errorConfirmPassword')">
+    <input type="password" placeholder="Retype Password" name="confpsw" maxlength="15"  onblur="validateConfPsw('errorConfirmPassword')">
     <div class="errorDiv" id="errorConfirmPassword"></div>
 
     <hr>

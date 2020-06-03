@@ -24,7 +24,7 @@ public class MeetingBeanPopulator {
         toReturn.setMeetingId(rs.getInt(MOConstants.MEETING_ID));
         toReturn.setMeetingTitle(rs.getString(MOConstants.MEETING_TITLE));
         toReturn.setMeetingData(rs.getDate(MOConstants.MEETING_DATE));
-        toReturn.setMeetingHour(rs.getDate(MOConstants.MEETING_HOUR));
+        toReturn.setMeetingHour(rs.getTime(MOConstants.MEETING_HOUR));
         toReturn.setEmployeeUsername(rs.getString(MOConstants.MEETING_USERNAME_ORGANIZER));
         toReturn.setInvolvedEmployeeNumber(rs.getInt(MOConstants.MEETING_INVOLVED_EMPLOYEE_NUMBER));
         toReturn.setMeetingsDuration(rs.getInt(MOConstants.MEETING_DURATION));

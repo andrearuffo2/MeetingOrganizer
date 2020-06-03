@@ -17,6 +17,12 @@ public class MOConstants {
     public static String SURNAME = "surname";
     public static String EMAIL = "email";
     public static String PASSWORD = "psw";
+    public static String REFRESH = "refresh";
+
+    //DB COLUMNS
+    public static String NAME_DB = "nome";
+    public static String SURNAME_DB = "cognome";
+    public static String PASSKEY_DB = "passkey";
 
     public MOConstants() {
     }
