@@ -1,5 +1,6 @@
 var responseBoolean = "";
 var responseError = "";
+var responseErrorJson = "";
 var invitedEmployeeList = new Array();
 var modalEmployeeList = new Array();
 var meeting;
@@ -93,7 +94,7 @@ function showModal(){
 
 	if(responseError != ""){
 		document.getElementById("fieldEmptyErrorParagraph").innerHTML = responseError;
-		document.getElementById("fieldEmptyErrorParagraph").style.visibility="visible";
+		document.getElementById("fieldEmptyErrorParagraph").style.display="none";
 	}
 
 	if(modalInternalDiv == null){
@@ -114,14 +115,14 @@ function showModal(){
 		members.value != "") {
 		if(checkFormErrors() == true){
 			document.getElementById("fieldEmptyErrorParagraph").innerHTML = "Please fix all form errors";
-			document.getElementById("fieldEmptyErrorParagraph").style.visibility="visible";
+			document.getElementById("fieldEmptyErrorParagraph").style.display="block";
 		} else {
 			modalExternalDiv.style.display = "block";
 			fillModal();
 		}
 	} else {
 		document.getElementById("fieldEmptyErrorParagraph").innerHTML = "Please fill all the empty form fields";
-		document.getElementById("fieldEmptyErrorParagraph").style.visibility="visible";
+		document.getElementById("fieldEmptyErrorParagraph").style.display="block";
 	}
 }
 
@@ -131,11 +132,11 @@ function checkFormErrors(){
 	var hour = document.getElementById("meetingHourError");
 	var duration = document.getElementById("meetingDurationError");
 	var members = document.getElementById("meetingMembersError");
-	if(window.getComputedStyle(title).visibility === "visible"||
-		window.getComputedStyle(date).visibility === "visible" ||
-		window.getComputedStyle(hour).visibility === "visible" ||
-		window.getComputedStyle(duration).visibility === "visible" ||
-		window.getComputedStyle(members).visibility === "visible") {
+	if(window.getComputedStyle(title).display === "block"||
+		window.getComputedStyle(date).display === "block" ||
+		window.getComputedStyle(hour).display === "block" ||
+		window.getComputedStyle(duration).display === "block" ||
+		window.getComputedStyle(members).display === "block") {
 		return true;
 	} else {
 		return false;
@@ -144,24 +145,24 @@ function checkFormErrors(){
 }
 
 function hidetitleError(){
-	document.getElementById("fieldEmptyErrorParagraph").style.visibility="hidden";
-	document.getElementById("meetingTitleError").style.visibility="hidden";
+	document.getElementById("fieldEmptyErrorParagraph").style.display="none";
+	document.getElementById("meetingTitleError").style.display="none";
 }
 function hideDateError(){
-	document.getElementById("fieldEmptyErrorParagraph").style.visibility="hidden";
-	document.getElementById("meetingDateError").style.visibility="hidden";
+	document.getElementById("fieldEmptyErrorParagraph").style.display="none";
+	document.getElementById("meetingDateError").style.display="none";
 }
 function hideHourError(){
-	document.getElementById("fieldEmptyErrorParagraph").style.visibility="hidden";
-	document.getElementById("meetingHourError").style.visibility="hidden";
+	document.getElementById("fieldEmptyErrorParagraph").style.display="none";
+	document.getElementById("meetingHourError").style.display="none";
 }
 function hideDurationError(){
-	document.getElementById("fieldEmptyErrorParagraph").style.visibility="hidden";
-	document.getElementById("meetingDurationError").style.visibility="hidden";
+	document.getElementById("fieldEmptyErrorParagraph").style.display="none";
+	document.getElementById("meetingDurationError").style.display="none";
 }
 function hideMembersError(){
-	document.getElementById("fieldEmptyErrorParagraph").style.visibility="hidden";
-	document.getElementById("meetingMembersError").style.visibility="hidden";
+	document.getElementById("fieldEmptyErrorParagraph").style.display="none";
+	document.getElementById("meetingMembersError").style.display="none";
 }
 
 function fillModal() {
@@ -173,7 +174,7 @@ function fillModal() {
 	errorParagraph.id = "errorParagraph";
 	errorParagraph.style.color = "red";
 	errorDiv.style.textAlign = "center";
-	errorDiv.style.visibility = "hidden";
+	errorDiv.style.display = "none";
 	errorDiv.id = "errorDiv";
 	errorDiv.appendChild(errorParagraph);
 	modalNode.appendChild(errorDiv);
@@ -277,7 +278,7 @@ function handleChange(element){
 	}
 }
 
-function validateAndSubmit(){
+function validateAndMakeCall(){
 
 	var modal = document.getElementById("myModal");
 	var meetForm = document.meetForm;
@@ -296,7 +297,7 @@ function validateAndSubmit(){
 		//Display modal again to display error
 		//TODO - Ricorda che nella chiamata devi passare anche l'utente che sta creando la riunione
 		errorParagraph.innerHTML = "Too many employees selected. Please deselect at least " + surplusEmployess + " of them"
-		errorDiv.style.visibility = "visible";
+		errorDiv.style.display = "block";
 		modal.style.display = "block";
 	} else {
 
@@ -311,36 +312,41 @@ function validateAndSubmit(){
 			requestObject['invitedEmployeeList'] = invitedEmployeeList;
 			requestObject['meetingOrganizator'] = loggedEmployeeEmail;
 
-			insertNewMeeting(requestObject);
-			var ownMeetingsTable = document.getElementById("ownMeetingsTable");
+			var postResponseBoolean = insertNewMeeting(requestObject);
+			if(postResponseBoolean == true){
+				var ownMeetingsTableBody = document.getElementById("table-body");
 
-			//creating the row to add to the table
-			var newMeetingRow = document.createElement("tr");
+				//creating the row to add to the table
+				var newMeetingRow = document.createElement("tr");
 
-			//Filling new row columns
-			var titleColumn = document.createElement("td");
-			titleColumn.innerHTML = meeting.meetingTitle;
-			var dataColumn = document.createElement("td");
-			dataColumn.innerHTML = meeting.meetingData;
-			var hourColumn = document.createElement("td");
-			hourColumn.innerHTML = meeting.meetingHour;
-			var durationColumn = document.createElement("td");
-			durationColumn.innerHTML = meeting.meetingDuration;
-			var membersColumn = document.createElement("td");
-			membersColumn.innerHTML = meeting.involvedEmployeeNumber;
+				//Filling new row columns
+				var titleColumn = document.createElement("td");
+				titleColumn.innerHTML = meeting.meetingTitle;
+				var dataColumn = document.createElement("td");
+				dataColumn.innerHTML = meeting.meetingData;
+				var hourColumn = document.createElement("td");
+				hourColumn.innerHTML = meeting.meetingHour;
+				var durationColumn = document.createElement("td");
+				durationColumn.innerHTML = meeting.meetingDuration;
+				var membersColumn = document.createElement("td");
+				membersColumn.innerHTML = meeting.involvedEmployeeNumber;
 
-			//adding columns to the row
-			newMeetingRow.appendChild(titleColumn);
-			newMeetingRow.appendChild(dataColumn);
-			newMeetingRow.appendChild(hourColumn);
-			newMeetingRow.appendChild(durationColumn);
-			newMeetingRow.appendChild(membersColumn);
+				//adding columns to the row
+				newMeetingRow.appendChild(titleColumn);
+				newMeetingRow.appendChild(dataColumn);
+				newMeetingRow.appendChild(hourColumn);
+				newMeetingRow.appendChild(durationColumn);
+				newMeetingRow.appendChild(membersColumn);
 
-			//finally add new row to the table
-			ownMeetingsTable.appendChild(newMeetingRow);
+				//finally add new row to the table
+				ownMeetingsTableBody.appendChild(newMeetingRow);
+			} else {
+				modal.style.display = "block";
+			}
+			meeting = "";
 		} else {
 			errorParagraph.innerHTML = "You must select at least 1 member other than you for the meeting";
-			errorDiv.style.visibility = "visible";
+			errorDiv.style.display = "block";
 			modal.style.display = "block";
 		}
 	}
@@ -351,26 +357,28 @@ function insertNewMeeting(requestObject) {
 	httpRequest = new XMLHttpRequest();
 	var jsonRequest = JSON.stringify(requestObject);
 	var modal = document.getElementById("myModal");
+	var postReponseBoolean = false;
 
 	if (!httpRequest) {
 		console.log('Unable to create XMLHTTP instance');
 		return false;
 	}
-	httpRequest.open('POST', 'saveNewMeeting');
+	httpRequest.open('POST', 'saveNewMeeting', true);
 	httpRequest.send(jsonRequest);
 	httpRequest.onreadystatechange = function() {
 		if (httpRequest.readyState === XMLHttpRequest.DONE) {
 			if (httpRequest.status === 200) {
 				meeting = JSON.parse(httpRequest.response);
+				postReponseBoolean = true;
 			} else {
-				responseError = JSON.parse(httpRequest.response);
-				errorParagraph.innerHTML = responseError.detailMessage;
-				errorDiv.style.visibility = "visible";
-				modal.style.display = "block";
+				responseErrorJson = JSON.parse(httpRequest.response);
+				responseError = responseErrorJson.errorMessage;
+				errorParagraph.innerHTML = responseError;
+				errorDiv.style.display = "block";
 			}
 		}
 	}
-	return responseBoolean;
+	return postReponseBoolean;
 }
 
 function retrieveAllEmployee() {
@@ -388,7 +396,11 @@ function retrieveAllEmployee() {
 			if (httpRequest.status === 200) {
 				employeeList = JSON.parse(httpRequest.response);
 			} else {
-				responseError = 'Something went wrong..!! Please contact the support team!';
+				responseErrorJson = JSON.parse('httpRequest.response');
+				responseError = responseErrorJson.errorMessage;
+				var mainPageErrorDiv = document.getElementById("mainPageErrorDiv");
+				mainPageErrorDiv.style.display="block";
+				mainPageErrorDiv.innerHTML = responseError;
 			}
 		}
 	}
@@ -405,7 +417,7 @@ function createSubmitButtonIfNotExists() {
 		createdSubmitButton.className = "modal-button";
 		createdSubmitButton.innerHTML = "Create meeting";
 		createdSubmitButton.id = "submitButton";
-		createdSubmitButton.setAttribute("onclick", "validateAndSubmit();")
+		createdSubmitButton.setAttribute("onclick", "validateAndMakeCall();")
 		divNode.className = "btn-modal-container";
 		divNode.appendChild(createdSubmitButton);
 		modalNode.appendChild(divNode);
@@ -417,7 +429,7 @@ function validateMembers(){
 	var meetingMembers = document.getElementById("members").value;
 	if(meetingMembers < 1){
 		membersError.innerHTML = "Meeting members must be at least 1 other than you";
-		membersError.style.visibility = "visible";
+		membersError.style.display = "block";
 	}
 }
 
@@ -427,7 +439,7 @@ function validateDuration(){
 	var meetingDuration = document.getElementById("duration").value;
 	if(meetingDuration < 1){
 		durationError.innerHTML = "Meeting duration must be at least 1 hour";
-		durationError.style.visibility = "visible";
+		durationError.style.display = "block";
 	}
 }
 
@@ -462,7 +474,7 @@ function validateHour(){
 		var totalTime = currentTime - inputTime;
 		if (totalTime > -1) {
 			hourError.innerHTML = "Meeting date must be at least 1 hours forward ";
-			hourError.style.visibility = "visible";
+			hourError.style.display = "block";
 		}
 	}
 }
@@ -475,7 +487,7 @@ function validateDate(){
 	today.setHours(0,0,0,0);
 	if (startDate.getTime() < today.getTime()) {
 		dateError.innerHTML = "Meeting date must be at least today's date ";
-		dateError.style.visibility = "visible";
+		dateError.style.display = "block";
 	}
 }
 
@@ -484,7 +496,7 @@ function validateTitle(){
 	var titleError = document.getElementById("meetingTitleError");
 	if(meetingTitle.value == ""){
 		titleError.innerHTML = "Set a title to the meeting";
-		titleError.style.visibility = "visible";
+		titleError.style.display = "block";
 	}
 }
 function goBack() {

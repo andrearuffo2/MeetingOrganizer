@@ -21,12 +21,16 @@ public class MeetingBeanPopulator {
         return instance;
     }
 
-    public MeetingBean populateMeeting(ResultSet rs) throws SQLException {
+    public MeetingBean populateMeeting(ResultSet rs) throws SQLException, ParseException {
         MeetingBean toReturn = new MeetingBean();
         toReturn.setMeetingId(rs.getInt(MOConstants.MEETING_ID_DB));
         toReturn.setMeetingTitle(rs.getString(MOConstants.MEETING_TITLE_DB));
-        toReturn.setMeetingData(rs.getDate(MOConstants.MEETING_DATE_DB));
-        toReturn.setMeetingHour(rs.getTime(MOConstants.MEETING_HOUR_DB));
+        Date meetingDate = new Date(rs.getDate(MOConstants.MEETING_DATE_DB).getTime());
+        toReturn.setMeetingData(meetingDate);
+        DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+        String meetingHourToParse = rs.getTime(MOConstants.MEETING_HOUR_DB).toString();
+        Time meetingHour = new Time(timeFormat.parse(meetingHourToParse).getTime());
+        toReturn.setMeetingHour(meetingHour);
         toReturn.setMeetingUsernameOrganizator(rs.getString(MOConstants.MEETING_USERNAME_ORGANIZATOR_DB));
         toReturn.setInvolvedEmployeeNumber(rs.getInt(MOConstants.MEETING_INVOLVED_EMPLOYEE_NUMBER_DB));
         toReturn.setMeetingsDuration(rs.getInt(MOConstants.MEETING_DURATION_DB));
@@ -38,7 +42,7 @@ public class MeetingBeanPopulator {
         toReturn.setMeetingTitle(request.getTitle());
         Date meetingDate = new Date(request.getData().getTime());
         toReturn.setMeetingData(meetingDate);
-        DateFormat timeFormat = new SimpleDateFormat("hh:mm");
+        DateFormat timeFormat = new SimpleDateFormat("HH:mm");
         Time meetingHour = new Time(timeFormat.parse(request.getHour()).getTime());
         toReturn.setMeetingHour(meetingHour);
         toReturn.setMeetingUsernameOrganizator(request.getMeetingOrganizator());

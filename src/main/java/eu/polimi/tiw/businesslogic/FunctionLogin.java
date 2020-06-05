@@ -3,6 +3,7 @@ package eu.polimi.tiw.businesslogic;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +62,8 @@ public class FunctionLogin extends GenericFunction{
 			return listToReturn;
 		}catch (SQLException e) {
 			throw new SQLException("Something went wrong while querying the db");
+		} catch (ParseException ex){
+			throw new AppCrash("Something went wrong. Please contact support!");
 		}
 	}
 
@@ -84,6 +87,8 @@ public class FunctionLogin extends GenericFunction{
 			return listToReturn;
 		}catch (SQLException e) {
 			throw new SQLException("Something went wrong while querying the db");
+		} catch (ParseException ex){
+			throw new AppCrash("Something went wrong. Please contact support!");
 		}
 	}
 }

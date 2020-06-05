@@ -6,8 +6,10 @@ import eu.polimi.tiw.common.*;
 import eu.polimi.tiw.dao.*;
 import eu.polimi.tiw.populator.*;
 import eu.polimi.tiw.request.*;
+import org.apache.commons.lang3.exception.*;
 
 import java.sql.*;
+import java.text.*;
 import java.util.*;
 
 /**
@@ -32,10 +34,11 @@ public class FunctionSaveMeetings extends GenericFunction{
             savedMeetingId = meetingsDao.insertMeeting(meetingBeanToSave);
 
         } catch (SQLException e) {
-            if(e instanceof MySQLIntegrityConstraintViolationException){
+            if(ExceptionUtils.indexOfThrowable(e.getCause(), MySQLIntegrityConstraintViolationException.class) != -1) {
+                // exception is or has a cause of type ExpectedException.class
                 throw new MySQLIntegrityConstraintViolationException("You can't plan another meeting organized by you at same hour");
             }
-            throw new SQLException("Something went wrong during db connection..");
+            throw new SQLException("Something went wrong while querying the db");
         } catch (Exception e){
             throw new AppCrash(e.getMessage());
         }
@@ -84,7 +87,7 @@ public class FunctionSaveMeetings extends GenericFunction{
      * @param meetingId
      * @throws SQLException
      */
-    public MeetingBean searchMeetingById(int meetingId) throws SQLException {
+    public MeetingBean searchMeetingById(int meetingId) throws SQLException, AppCrash {
         try(Connection conn = DbConnection.getInstance().getConnection();) {
 
             MeetingsDao meetingsDao = new MeetingsDao(conn);
@@ -97,6 +100,8 @@ public class FunctionSaveMeetings extends GenericFunction{
 
         }catch (SQLException e) {
             throw new SQLException("Something went wrong while querying the db");
+        } catch (ParseException ex){
+            throw new AppCrash("Something went wrong. Please contact support!");
         }
     }
 

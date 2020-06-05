@@ -28,9 +28,11 @@ public class RetieveEmployeeServlet extends GenericServlet{
             String json = new Gson().toJson(employeeBeansList);
             response.getWriter().write(json);
         } catch (AppCrash | SQLException e) {
+            ErrorBean errorBean = new ErrorBean(e.getMessage());
+            String errorBeanJson = new Gson().toJson(errorBean);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.setContentType("application/json");
-            response.getWriter().write(String.valueOf(true));
+            response.getWriter().write(errorBeanJson);
         }
     }
 

@@ -24,11 +24,14 @@
     }
     if(userName == null) response.sendRedirect("login.jsp");
 %>
+<div id="mainPageErrorDiv" style="text-align: center; display: none">
+    <h1 style="color: red"></h1>
+</div>
 <div class="container">
     <% EmployeeBean employeeBean = (EmployeeBean) request.getAttribute("employeeData");%>
     <h1>Welcome <%=employeeBean.getName()%> <%=employeeBean.getSurname()%></h1>
     <p>Here are displayed your next mettings</p>
-    <input type="text" id="loggedEmployeeEmail" style="visibility: hidden" value=<%=employeeBean.getEmail()%>>
+    <input type="text" id="loggedEmployeeEmail" style="display: none" value=<%=employeeBean.getEmail()%>>
     <div class="table-container">
         <table border ="1" align="center" id="ownMeetingsTable">
             <caption><h3>Employee OWN meetings list</h3></caption>
@@ -72,19 +75,22 @@
                  which was previously set by the servlet
                   "StudentServlet.java"
             --%>
-            <%ArrayList<MeetingBean> invitedMeetingBeanArrayList =
-                    (ArrayList<MeetingBean>)request.getAttribute("meetingsInvitedList");
-                for(MeetingBean s:invitedMeetingBeanArrayList){%>
-            <%-- Arranging data in tabular form
-            --%>
-            <tr>
-                <td><%=s.getMeetingTitle()%></td>
-                <td><%=s.getMeetingData()%></td>
-                <td><%=s.getMeetingHour()%></td>
-                <td><%=s.getMeetingsDuration()%></td>
-                <td><%=s.getInvolvedEmployeeNumber()%></td>
-            </tr>
-            <%}%>
+            <tbody id="table-body">
+                <%ArrayList<MeetingBean> invitedMeetingBeanArrayList =
+                        (ArrayList<MeetingBean>)request.getAttribute("meetingsInvitedList");
+                    for(MeetingBean s:invitedMeetingBeanArrayList){%>
+                <%-- Arranging data in tabular form
+                --%>
+
+                <tr>
+                    <td><%=s.getMeetingTitle()%></td>
+                    <td><%=s.getMeetingData()%></td>
+                    <td><%=s.getMeetingHour()%></td>
+                    <td><%=s.getMeetingsDuration()%></td>
+                    <td><%=s.getInvolvedEmployeeNumber()%></td>
+                </tr>
+                <%}%>
+            </tbody>
         </table>
     </div>
 <div/>
@@ -96,26 +102,26 @@
                 <h1 style="text-align: center">Plan a new meeting</h1>
                 <p>Complete all the information below to insert new meeting.</p>
                 <hr>
-                <p id="fieldEmptyErrorParagraph" style="text-align:center; color:#ff0000; visibility:hidden; font-weight: bold;"></p>
+                <p id="fieldEmptyErrorParagraph" style="text-align:center; color:#ff0000; display:none; font-weight: bold;"></p>
                 <label for="title"><b>Meeting title</b></label>
                 <input id="title" type="text" placeholder="Enter meeting title" name="title" onfocus="hidetitleError()" onfocusout="validateTitle()" >
-                <p id="meetingTitleError" class="errorFormParagraph" style="visibility: hidden; "></p>
+                <p id="meetingTitleError" class="errorFormParagraph" style="display: none; "></p>
 
                 <label for="date"><b>Meeting date</b></label>
                 <input id="date" type="date" placeholder="Enter meeting's date" name="date" onfocus="hideDateError()" onfocusout="validateDate()">
-                <p id="meetingDateError" class="errorFormParagraph" style="visibility: hidden; "></p>
+                <p id="meetingDateError" class="errorFormParagraph" style="display: none; "></p>
 
                 <label for="hour"><b>Meeting hour</b></label>
                 <input id="hour" type="time" placeholder="Enter meeting's" name="hour" onfocus="hideHourError()" onfocusout="validateHour()">
-                <p id="meetingHourError" class="errorFormParagraph" style="visibility: hidden; "></p>
+                <p id="meetingHourError" class="errorFormParagraph" style="display: none; "></p>
 
                 <label for="duration"><b>Meeting duration</b></label>
                 <input id="duration" type="number" placeholder="Enter meeting's duration" name="duration" onfocus="hideDurationError()" onfocusout="validateDuration()">
-                <p id="meetingDurationError" class="errorFormParagraph" style="visibility: hidden; "></p>
+                <p id="meetingDurationError" class="errorFormParagraph" style="display: none; "></p>
 
                 <label for="members"><b>Meeting members number</b></label>
                 <input id="members" type="number" placeholder="Enter maximum number of members" name="members" onfocus="hideMembersError()" onfocusout="validateMembers()">
-                <p id="meetingMembersError" class="errorFormParagraph" style="visibility: hidden; "></p>
+                <p id="meetingMembersError" class="errorFormParagraph" style="display: none; "></p>
 
             </div>
         </form>

@@ -56,20 +56,24 @@ public class SaveMeetingServlet extends GenericServlet{
             String json = new Gson().toJson(newlyInsertedMeeting);
             response.getWriter().write(json);
         } catch (SQLException throwables) {
+            ErrorBean errorBean = new ErrorBean(throwables.getMessage());
+            String errorBeanJson = new Gson().toJson(errorBean);
             if(throwables instanceof MySQLIntegrityConstraintViolationException){
                 //assegna alla response il codice 404
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.setContentType("application/json");
-                response.getWriter().write(throwables.getMessage());
+                response.getWriter().write(errorBeanJson);
             } else {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 response.setContentType("application/json");
-                response.getWriter().write(throwables.getMessage());
+                response.getWriter().write(errorBeanJson);
             }
         } catch (AppCrash appCrash) {
+            ErrorBean errorBean = new ErrorBean(appCrash.getMessage());
+            String errorBeanJson = new Gson().toJson(errorBean);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.setContentType("application/json");
-            response.getWriter().write(appCrash.getMessage());
+            response.getWriter().write(errorBeanJson);
         }
 
     }
