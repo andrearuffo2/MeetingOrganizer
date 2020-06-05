@@ -67,7 +67,7 @@ public class LoginServlet extends GenericServlet {
 			request.setAttribute("employeeData", employeeBean);
 			//Meetings list were the employee was invited
 			request.setAttribute("meetingsInvitedList", employeeInvitedActiveMeetings);
-			disp = request.getRequestDispatcher("personalpage2.jsp");
+			disp = request.getRequestDispatcher("personalpage.jsp");
 			disp.forward(request, response);
 		} catch (AppCrash var12) {
 			disp = request.getRequestDispatcher("login.jsp");

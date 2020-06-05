@@ -4,7 +4,6 @@ import eu.polimi.tiw.bean.*;
 import eu.polimi.tiw.common.*;
 import org.apache.commons.lang3.*;
 
-import javax.security.auth.*;
 import javax.servlet.http.*;
 import java.sql.*;
 
@@ -44,7 +43,7 @@ public class EmployeeBeanPopulator {
         toPopulate.setPassKey(req.getParameter(MOConstants.PASSWORD));
         if (StringUtils.isNotEmpty(req.getParameter(MOConstants.REFRESH))) {
             //TODO da verificare
-            toPopulate.setEmployeeId(Integer.parseInt(req.getParameter(MOConstants.EMPLOYEE_ID)));
+            toPopulate.setEmployeeId(Integer.parseInt(req.getParameter(MOConstants.EMPLOYEE_ID_DB)));
             toPopulate.setRefreshPage(true);
         }
 
@@ -53,7 +52,7 @@ public class EmployeeBeanPopulator {
 
     public static EmployeeBean populateBean(ResultSet resultSet) throws SQLException {
         EmployeeBean toPopulate = new EmployeeBean();
-        toPopulate.setEmployeeId(resultSet.getInt(MOConstants.EMPLOYEE_ID));
+        toPopulate.setEmployeeId(resultSet.getInt(MOConstants.EMPLOYEE_ID_DB));
         toPopulate.setName(resultSet.getString(MOConstants.NAME_DB));
         toPopulate.setSurname(resultSet.getString(MOConstants.SURNAME_DB));
         toPopulate.setEmail(resultSet.getString(MOConstants.EMAIL));

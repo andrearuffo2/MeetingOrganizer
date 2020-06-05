@@ -1,88 +1,131 @@
-<%@ page language="java" contentType="text/html; charset=US-ASCII" pageEncoding="US-ASCII"%>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
+<%@page import="eu.polimi.tiw.bean.MeetingBean"%>
+<%@page import="eu.polimi.tiw.bean.EmployeeBean"%>
+<%@page import="java.util.ArrayList"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" type="text/css" href="css/style.css">
-	<script src="js/script.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Employee's personal page</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script src="js/script.js"></script>
 </head>
-<body>
 
-<%	
-	String userName = null;
-	Cookie[] cookies = request.getCookies();
-	if(cookies !=null){
-		for(Cookie cookie : cookies){
-			if(cookie.getName().equals("user")) userName = cookie.getValue();
-		}
-	}
-	if(userName == null) response.sendRedirect("login.jsp");
+<body onload="retrieveAllEmployee();">
+
+<%
+    String userName = null;
+    Cookie[] cookies = request.getCookies();
+    if(cookies !=null){
+        for(Cookie cookie : cookies){
+            if(cookie.getName().equals("user")) userName = cookie.getValue();
+        }
+    }
+    if(userName == null) response.sendRedirect("login.jsp");
 %>
-
-<form id="reportForm" action="report" method="POST"></form>
-<form id="addProjectToUser" action="projectAddition" method="POST"></form>
 <div class="container">
-	  <h3>Login successful.</h3>
-	  <p>Here is your personal report page.</p>
-	  
-	  <!-- Button to subscribe the user to a new project -->
-	  <div id="selectOptionPersonalPrj">
-	      <div id="selectedPersonalPrj" onclick="openSelectPersonalPrj()">....</div>
-	      <div id="optionsPersonalPrj" class="close">
-		      <c:forEach items="${projectList}" var="project">
-		        <div class="optionPersonalPrj">${project.idProgetto} - ${project.nome}</div>
-		      </c:forEach>
-	      </div>
-	      <input id="selectedValuePersonalPrj" form="addProjectToUser" type="hidden" name="selectedValuePersonalPrj" required/>
-	      <input type="hidden" form="addProjectToUser" value=<%=userName%> name="userId">
-      </div>
-	  <button type="submit" form="addProjectToUser" class="projectbtn">Subscribe to this project</button>
-	  
-	  
-	  <hr>
-	  
-	  <c:forEach items="${usersprojects}" var="project" varStatus="rowStatus">
-	       <label><b>${project.nomeProgetto}</b></label>
-	       <hr>
-	       <select name="dayproject${rowStatus.index}" form="reportForm">
-		        <c:forEach items="${project.daysOfTheMonth}" var="day" varStatus="rowCount">
-					  <option value="${day}">${day}</option>
-				</c:forEach>
-			</select>
-		<hr>
-		<label for="hourNumber"><b>Hour number for the project</b></label>
-		<hr>
-	  		<input type="number" placeholder="Max hour per day is 8" name="hourNumber${rowStatus.index}" max="8" form="reportForm" required>
-	  		<input type="hidden" value="${project.idProgetto}" name="projectName${rowStatus.index}" form="reportForm">
-	  		
-	  		
-	  		
-	  		
-	  		<hr>
-	  		
-	  		<!-- bottone per report mensile del progetto in oggetto -->
-	  		<form id="projectCalendar" action="projectCalendar" method="POST">
-	  			<input type="hidden" value="${project.idProgetto}" name="projectCalendar">
-	  			<input type="hidden" value=<%=userName%> name="userId">
-	  			<button id="calendar${rowStatus.index}" type="submit" class="calendarbtn">Report mensile del progetto</button>
-	  		</form>
-	  		<hr>
-	  		
-	  		<c:set var="projectsNumber" scope ="session" value ="${rowStatus.index}"/>
-	</c:forEach>
-	
-	<input type="hidden" value=<%=userName%> name="userId" form="reportForm">
-	<input type="hidden" value="${projectsNumber}" name="projectsNumber" form="reportForm">
-   
-</div>
-<button type="submit" form="reportForm" class="registerbtn">submit</button>
+    <% EmployeeBean employeeBean = (EmployeeBean) request.getAttribute("employeeData");%>
+    <h1>Welcome <%=employeeBean.getName()%> <%=employeeBean.getSurname()%></h1>
+    <p>Here are displayed your next mettings</p>
+    <input type="text" id="loggedEmployeeEmail" style="visibility: hidden" value=<%=employeeBean.getEmail()%>>
+    <div class="table-container">
+        <table border ="1" align="center" id="ownMeetingsTable">
+            <caption><h3>Employee OWN meetings list</h3></caption>
+            <tr bgcolor="4CAF50">
+                <th><b>Meeting title</b></th>
+                <th><b>Meeting Data</b></th>
+                <th><b>Meeting Hour</b></th>
+                <th><b>Meeting Duration</b></th>
+                <th><b>Number of partecipants</b></th>
+            </tr>
+            <%-- Fetching the attributes of the request object
+                 which was previously set by the servlet
+                  "StudentServlet.java"
+            --%>
+            <%ArrayList<MeetingBean> meetingBeanArrayList =
+                    (ArrayList<MeetingBean>)request.getAttribute("meetingsOwnList");
+                for(MeetingBean s:meetingBeanArrayList){%>
+                <%-- Arranging data in tabular form
+                --%>
+                <tr>
+                    <td><%=s.getMeetingTitle()%></td>
+                    <td><%=s.getMeetingData()%></td>
+                    <td><%=s.getMeetingHour()%></td>
+                    <td><%=s.getMeetingsDuration()%></td>
+                    <td><%=s.getInvolvedEmployeeNumber()%></td>
+                </tr>
+            <%}%>
+        </table>
 
-<form action="logout" method="POST">
-	<div class="container signin">
-    	<p>Do you want to logout? <button type="submit" class="loginbtn"> Logout </button></p>
- 	</div>
-</form>
+        <%--<h1>Displaying Employee invited meetings list</h1>--%>
+        <table border ="1" align="center">
+            <caption><h3>Employee Invited meetings list</h3></caption>
+            <tr bgcolor="4CAF50">
+                <th><b>Meeting title</b></th>
+                <th><b>Meeting Data</b></th>
+                <th><b>Meeting Hour</b></th>
+                <th><b>Meeting Duration</b></th>
+                <th><b>Number of partecipants</b></th>
+            </tr>
+            <%-- Fetching the attributes of the request object
+                 which was previously set by the servlet
+                  "StudentServlet.java"
+            --%>
+            <%ArrayList<MeetingBean> invitedMeetingBeanArrayList =
+                    (ArrayList<MeetingBean>)request.getAttribute("meetingsInvitedList");
+                for(MeetingBean s:invitedMeetingBeanArrayList){%>
+            <%-- Arranging data in tabular form
+            --%>
+            <tr>
+                <td><%=s.getMeetingTitle()%></td>
+                <td><%=s.getMeetingData()%></td>
+                <td><%=s.getMeetingHour()%></td>
+                <td><%=s.getMeetingsDuration()%></td>
+                <td><%=s.getInvolvedEmployeeNumber()%></td>
+            </tr>
+            <%}%>
+        </table>
+    </div>
+<div/>
 
+<%--FORM to insert new meeting--%>
+        <form name="meetForm" action="login" method="POST">
+
+            <div class="container">
+                <h1 style="text-align: center">Plan a new meeting</h1>
+                <p>Complete all the information below to insert new meeting.</p>
+                <hr>
+                <p id="fieldEmptyErrorParagraph" style="text-align:center; color:#ff0000; visibility:hidden; font-weight: bold;"></p>
+                <label for="title"><b>Meeting title</b></label>
+                <input id="title" type="text" placeholder="Enter meeting title" name="title" onfocus="hidetitleError()" onfocusout="validateTitle()" >
+                <p id="meetingTitleError" class="errorFormParagraph" style="visibility: hidden; "></p>
+
+                <label for="date"><b>Meeting date</b></label>
+                <input id="date" type="date" placeholder="Enter meeting's date" name="date" onfocus="hideDateError()" onfocusout="validateDate()">
+                <p id="meetingDateError" class="errorFormParagraph" style="visibility: hidden; "></p>
+
+                <label for="hour"><b>Meeting hour</b></label>
+                <input id="hour" type="time" placeholder="Enter meeting's" name="hour" onfocus="hideHourError()" onfocusout="validateHour()">
+                <p id="meetingHourError" class="errorFormParagraph" style="visibility: hidden; "></p>
+
+                <label for="duration"><b>Meeting duration</b></label>
+                <input id="duration" type="number" placeholder="Enter meeting's duration" name="duration" onfocus="hideDurationError()" onfocusout="validateDuration()">
+                <p id="meetingDurationError" class="errorFormParagraph" style="visibility: hidden; "></p>
+
+                <label for="members"><b>Meeting members number</b></label>
+                <input id="members" type="number" placeholder="Enter maximum number of members" name="members" onfocus="hideMembersError()" onfocusout="validateMembers()">
+                <p id="meetingMembersError" class="errorFormParagraph" style="visibility: hidden; "></p>
+
+            </div>
+        </form>
+        <div class="btn-container">
+            <button id="myBtn" class="modal-button" onclick="showModal()">Click to select members</button>
+        </div>
+
+        <!-- The Modal -->
+        <div id="myModal" class="modal">
+            <%--javascript will populate the modal--%>
+        </div>
 </body>
 </html>

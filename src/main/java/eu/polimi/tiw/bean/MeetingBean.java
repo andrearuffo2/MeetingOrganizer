@@ -8,9 +8,9 @@ public class MeetingBean {
     private String meetingTitle;
     private Date meetingData;
     private Time meetingHour;
-    private int meetingsDuration;
+    private int meetingDuration;
     private int involvedEmployeeNumber;
-    private String employeeUsername;
+    private String meetingUsernameOrganizator;
 
     public MeetingBean() {
     }
@@ -48,11 +48,11 @@ public class MeetingBean {
     }
 
     public int getMeetingsDuration() {
-        return this.meetingsDuration;
+        return this.meetingDuration;
     }
 
     public void setMeetingsDuration(int meetingsDuration) {
-        this.meetingsDuration = meetingsDuration;
+        this.meetingDuration = meetingsDuration;
     }
 
     public int getInvolvedEmployeeNumber() {
@@ -63,11 +63,11 @@ public class MeetingBean {
         this.involvedEmployeeNumber = involvedEmployeeNumber;
     }
 
-    public String getEmployeeUsername() {
-        return this.employeeUsername;
+    public String getMeetingUsernameOrganizator() {
+        return meetingUsernameOrganizator;
     }
 
-    public void setEmployeeUsername(String employeeUsername) {
-        this.employeeUsername = employeeUsername;
+    public void setMeetingUsernameOrganizator(String meetingUsernameOrganizator) {
+        this.meetingUsernameOrganizator = meetingUsernameOrganizator;
     }
 }

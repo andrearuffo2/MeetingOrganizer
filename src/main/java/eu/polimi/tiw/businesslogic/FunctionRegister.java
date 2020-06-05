@@ -13,7 +13,7 @@ import eu.polimi.tiw.repository.*;
  * @author Andrea Ruffo
  * @since 0.0.1-SNAPSHOT This class handle registration logic.
  */
-public class FunctionRegister {
+public class FunctionRegister extends GenericFunction{
 
 	/**
 	 * This method will check if user already exists on db.
@@ -32,7 +32,7 @@ public class FunctionRegister {
 			}
 			return true;
 		}catch (SQLException e) {
-			throw new SQLException("Something went wrong during db connection..");
+			throw new SQLException("Something went wrong while querying the db");
 		}
 	}
 
@@ -47,7 +47,7 @@ public class FunctionRegister {
 			EmployeeDao employeeDao = new EmployeeDao(conn);
 			employeeDao.insertUser(employeeBean);
 		}catch (SQLException e) {
-			throw new SQLException("Something went wrong during db connection..");
+			throw new SQLException("Something went wrong while querying the db");
 		}
 	}
 }

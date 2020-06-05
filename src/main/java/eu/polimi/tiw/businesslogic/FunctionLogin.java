@@ -15,7 +15,7 @@ import eu.polimi.tiw.populator.*;
  * @author Andrea Ruffo
  * @since 0.0.1-SNAPSHOT This class handle user login logic.
  */
-public class FunctionLogin {
+public class FunctionLogin extends GenericFunction{
 
 	public FunctionLogin() {
 	}
@@ -35,13 +35,13 @@ public class FunctionLogin {
 					throw new AppCrash("An user with this email is not present in our system. Please register!");
 				}
 
-				if (!Encription.verifyHash(loginEmployeeBean.getPassKey(), searchResult.getString(MOConstants.EMPLOYEE_PASSKEY))) {
+				if (!Encription.verifyHash(loginEmployeeBean.getPassKey(), searchResult.getString(MOConstants.EMPLOYEE_PASSKEY_DB))) {
 					throw new AppCrash("The password is not correct. Please retry");
 				}
 				return EmployeeBeanPopulator.populateBean(searchResult);
 			}
 		}catch (SQLException e) {
-			throw new SQLException("Something went wrong during db connection..");
+			throw new SQLException("Something went wrong while querying the db");
 		}
 
 		//TODO to complete with refreshPage logic
@@ -55,12 +55,12 @@ public class FunctionLogin {
 			ResultSet searchResult = meetingsDao.searchOwnMeetingsByEmployee(employeeBean);
 
 			while(searchResult.next()) {
-				listToReturn.add(MeetingBeanPopulator.getInstance().populate(searchResult));
+				listToReturn.add(MeetingBeanPopulator.getInstance().populateMeeting(searchResult));
 			}
 
 			return listToReturn;
 		}catch (SQLException e) {
-			throw new SQLException("Something went wrong during db connection..");
+			throw new SQLException("Something went wrong while querying the db");
 		}
 	}
 
@@ -78,12 +78,12 @@ public class FunctionLogin {
 			ResultSet searchResult = meetingsDao.searchInvitedMeetingsByEmployee(employeeBean);
 
 			while(searchResult.next()) {
-				listToReturn.add(MeetingBeanPopulator.getInstance().populate(searchResult));
+				listToReturn.add(MeetingBeanPopulator.getInstance().populateMeeting(searchResult));
 			}
 
 			return listToReturn;
 		}catch (SQLException e) {
-			throw new SQLException("Something went wrong during db connection..");
+			throw new SQLException("Something went wrong while querying the db");
 		}
 	}
 }

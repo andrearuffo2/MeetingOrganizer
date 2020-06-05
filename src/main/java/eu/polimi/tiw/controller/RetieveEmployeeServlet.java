@@ -21,7 +21,7 @@ public class RetieveEmployeeServlet extends GenericServlet{
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        FunctionAddMeeting functionAddMeeting = new FunctionAddMeeting();
+        FunctionSaveMeetings functionAddMeeting = new FunctionSaveMeetings();
         try {
             List<EmployeeBean> employeeBeansList = functionAddMeeting.searchAllEmployee();
             response.setContentType("application/json");

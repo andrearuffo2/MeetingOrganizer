@@ -68,4 +68,5 @@ public class RegisterServlet extends GenericServlet {
 			response.getWriter().write(String.valueOf(true));
 		}
 	}
+
 }

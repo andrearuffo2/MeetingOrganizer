@@ -461,10 +461,16 @@ caption{
 
 /* Modal Content */
 .modal-content {
-	background-color: #fefefe;
 	margin: 20px;
 	padding: 20px;
 	border: 1px solid #888;
+	background-color: white;
+}
+
+.errorFormParagraph{
+	color: red;
+	font-size:15px;
+	font-weight: bold;
 }
 
 /* The Close Button */
