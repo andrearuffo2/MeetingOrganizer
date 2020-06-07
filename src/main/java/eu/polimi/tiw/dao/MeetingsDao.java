@@ -106,9 +106,9 @@ public class MeetingsDao extends GenericDao {
             statement.close();
             return meetingId;
         } catch (SQLException ex){
-            if(ex.getCause() instanceof MySQLIntegrityConstraintViolationException)
+            if(ex.getSQLState().startsWith("23")) {
                 throw new ConstraintViolationException(MOConstants.CONSTRAINTS_VIOLATION);
-            else{
+            } else{
                 throw new SQLException(ex.getMessage());
             }
         }

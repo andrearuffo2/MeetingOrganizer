@@ -1,4 +1,4 @@
-var meeting;
+var meetings;
 var invitedEmployeeList = new Array();
 var invitedMeetingList = new Array();
 var ownMeetingList = new Array();
@@ -49,12 +49,12 @@ function populateHomePage(homePageResponse){
     invitedMeetingList = homePageResponse.employeeInvitedActiveMeetings;
     ownMeetingList = homePageResponse.employeeOwnActiveMeetings;
 
-    fillMeetingTables();
+    fillOwnMeetingTables();
+    fillInvitedMeetingTables(invitedMeetingList);
 }
 
-function fillMeetingTables(){
+function fillOwnMeetingTables(){
 
-    var invitedMeetingTableElement = document.getElementById("invitedMeetingsTableBody");
     var ownMeetingsTableElement = document.getElementById("ownMeetingsTableBody");
 
     //filling ownMeetingsTable
@@ -81,9 +81,12 @@ function fillMeetingTables(){
 
         ownMeetingsTableElement.appendChild(newRow);
     }
+}
 
+function fillInvitedMeetingTables(meetingList){
+    var invitedMeetingTableElement = document.getElementById("invitedMeetingsTableBody");
     //filling invitedMeetingTable
-    for(var i = 0; i < invitedMeetingList.length; i++){
+    for(var i = 0; i < meetingList.length; i++){
 
         var newRow = document.createElement("tr");
         var newTitleColumn = document.createElement("td");
@@ -92,11 +95,11 @@ function fillMeetingTables(){
         var newDurationColumn = document.createElement("td");
         var newMembersColumn = document.createElement("td");
 
-        newTitleColumn.innerHTML = invitedMeetingList[i].meetingTitle;
-        newDateColumn.innerHTML = invitedMeetingList[i].meetingData;
-        newHourColumn.innerHTML = invitedMeetingList[i].meetingHour;
-        newDurationColumn.innerHTML = invitedMeetingList[i].meetingDuration;
-        newMembersColumn.innerHTML = invitedMeetingList[i].involvedEmployeeNumber;
+        newTitleColumn.innerHTML = meetingList[i].meetingTitle;
+        newDateColumn.innerHTML = meetingList[i].meetingData;
+        newHourColumn.innerHTML = meetingList[i].meetingHour;
+        newDurationColumn.innerHTML = meetingList[i].meetingDuration;
+        newMembersColumn.innerHTML = meetingList[i].involvedEmployeeNumber;
 
         newRow.appendChild(newTitleColumn);
         newRow.appendChild(newDateColumn);
@@ -105,6 +108,16 @@ function fillMeetingTables(){
         newRow.appendChild(newMembersColumn);
 
         invitedMeetingTableElement.appendChild(newRow);
+    }
+}
+
+function preventToDuplicateInvitedMeetingsRows(meetingList){
+    for(var i = 0; i < invitedMeetingList.length; i++){
+        for(var j = 0; i < meetingList.length; i++){
+            if(JSON.stringify(invitedMeetingList[i]) === JSON.stringify(meetingList[j])){
+              meetingList.splice(j, 1);
+            }
+        }
     }
 }
 
@@ -303,7 +316,7 @@ function validateAndMakeCall(){
 
             //Flush request parameters
             form.reset();
-            meeting = "";
+            meetings = "";
         } else {
             errorParagraph.innerHTML = "You must select at least 1 member other than you for the meeting";
             errorDiv.style.display = "block";
@@ -323,8 +336,10 @@ function insertNewMeeting(requestObject, form) {
                 switch (req.status) {
                     case 200:
                         //Logica insertNewMeeting
-                        meeting = JSON.parse(req.response);
-                        addNewMeetingToTable();
+                        meetings = JSON.parse(req.response);
+                        addNewMeetingToTable(meetings.newlyInsertedMeeting);
+                        preventToDuplicateInvitedMeetingsRows(meetings.invitedMeetingList);
+                        fillInvitedMeetingTables(meetings.invitedMeetingList);
                         uncheckInvitedEmployee();
                         window.scrollTo(0, 0);
                         break;
@@ -332,7 +347,6 @@ function insertNewMeeting(requestObject, form) {
                         document.getElementById("homePageDiv").style.display="block";
                         document.getElementById("homepageMessage").innerHTML=jsonResponse.errorMessage
                         document.getElementById("homepageMessage").style.color="red";
-                        form.clear();
                         uncheckInvitedEmployee();
                         window.scrollTo(0, 0);
                         break;
@@ -341,7 +355,7 @@ function insertNewMeeting(requestObject, form) {
                         document.getElementById("homepageMessage").innerHTML=jsonResponse.errorMessage;
                         document.getElementById("homepageMessage").style.color="red";
 
-                        form.clear();
+                        form.reset();
                         uncheckInvitedEmployee();
                         //flush the session if is not.
                         sessionStorage.clear();
@@ -354,7 +368,6 @@ function insertNewMeeting(requestObject, form) {
                         document.getElementById("homepageMessage").style.color="red";
 
                         //Flush form field and decheck invited employees
-                        form.reset();
                         uncheckInvitedEmployee();
                         window.scrollTo(0, 0);
                         break;
@@ -362,7 +375,6 @@ function insertNewMeeting(requestObject, form) {
                         document.getElementById("homePageDiv").style.display="block";
                         document.getElementById("homepageMessage").innerHTML=jsonResponse.errorMessage;
                         document.getElementById("homepageMessage").style.color="red";
-                        form.reset();
                         uncheckInvitedEmployee();
                         window.scrollTo(0, 0);
                         break;
@@ -372,7 +384,7 @@ function insertNewMeeting(requestObject, form) {
     )
 }
 
-function addNewMeetingToTable(){
+function addNewMeetingToTable(newlyInsertedMeeting){
 
     var ownMeetingsTableBody = document.getElementById("ownMeetingsTableBody");
 
@@ -381,15 +393,15 @@ function addNewMeetingToTable(){
 
     //Filling new row columns
     var titleColumn = document.createElement("td");
-    titleColumn.innerHTML = meeting.meetingTitle;
+    titleColumn.innerHTML = newlyInsertedMeeting.meetingTitle;
     var dataColumn = document.createElement("td");
-    dataColumn.innerHTML = meeting.meetingData;
+    dataColumn.innerHTML = newlyInsertedMeeting.meetingData;
     var hourColumn = document.createElement("td");
-    hourColumn.innerHTML = meeting.meetingHour;
+    hourColumn.innerHTML = newlyInsertedMeeting.meetingHour;
     var durationColumn = document.createElement("td");
-    durationColumn.innerHTML = meeting.meetingDuration;
+    durationColumn.innerHTML = newlyInsertedMeeting.meetingDuration;
     var membersColumn = document.createElement("td");
-    membersColumn.innerHTML = meeting.involvedEmployeeNumber;
+    membersColumn.innerHTML = newlyInsertedMeeting.involvedEmployeeNumber;
 
     //adding columns to the row
     newMeetingRow.appendChild(titleColumn);
@@ -545,4 +557,26 @@ function uncheckInvitedEmployee(){
         }
     }
     invitedEmployeeList = [];
+}
+
+function logout(){
+    makeCall("POST", 'logout', null,
+        function(req) {
+            if (req.readyState == XMLHttpRequest.DONE) {
+                switch (req.status) {
+                    case 200:
+                        sessionStorage.clear();
+                        window.location.href = "login.html";
+                        break;
+                    case 500: // server error
+                        document.getElementById("homePageDiv").style.display="block";
+                        document.getElementById("homepageMessage").innerHTML="Something went wrong. Please close the browser sheet and contact support!"
+                        document.getElementById("homepageMessage").style.color="red";
+                        window.scrollTo(0, 0);
+                        sessionStorage.clear();
+                        break;
+                }
+            }
+        }
+    )
 }

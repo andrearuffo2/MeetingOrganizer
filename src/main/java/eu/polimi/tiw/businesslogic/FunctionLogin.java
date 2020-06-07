@@ -12,12 +12,15 @@ import eu.polimi.tiw.common.*;
 import eu.polimi.tiw.dao.*;
 import eu.polimi.tiw.exception.*;
 import eu.polimi.tiw.populator.*;
+import org.apache.log4j.*;
 
 /**
  * @author Andrea Ruffo
  * @since 0.0.1-SNAPSHOT This class handle user login logic.
  */
 public class FunctionLogin extends GenericFunction{
+
+	private static Logger log = Logger.getLogger(FunctionLogin.class);
 
 	public FunctionLogin() {
 	}
@@ -29,25 +32,25 @@ public class FunctionLogin extends GenericFunction{
 	 * @throws SQLException
 	 */
 	public EmployeeBean searchEmployee(EmployeeBean loginEmployeeBean) throws AppCrash, SQLException {
+		log.info("FunctionLogin - searchEmployee - START");
 		try(Connection conn = DbConnection.getInstance().getConnection();) {
-		EmployeeDao employeeDao = new EmployeeDao(conn);
-			if (!loginEmployeeBean.isRefreshPage()) {
-				ResultSet searchResult = employeeDao.searchEmployee(loginEmployeeBean.getEmail());
-				if (!searchResult.next()) {
-					throw new EmployeeNotFoundException("An user with this email is not present in our system. Please register!");
-				}
-
-				if (!Encription.verifyHash(loginEmployeeBean.getPassKey(), searchResult.getString(MOConstants.EMPLOYEE_PASSKEY_DB))) {
-					throw new BadPasswordException("The password is not correct. Please retry");
-				}
-				return EmployeeBeanPopulator.populateBean(searchResult);
+			EmployeeDao employeeDao = new EmployeeDao(conn);
+			ResultSet searchResult = employeeDao.searchEmployee(loginEmployeeBean.getEmail());
+			if (!searchResult.next()) {
+				log.error("FunctionLogin - searchEmployee - EmployeeNotFoundException");
+				throw new EmployeeNotFoundException("An user with this email is not present in our system. Please register!");
 			}
+
+			if (!Encription.verifyHash(loginEmployeeBean.getPassKey(), searchResult.getString(MOConstants.EMPLOYEE_PASSKEY_DB))) {
+				log.error("FunctionLogin - searchEmployee - BadPasswordException");
+				throw new BadPasswordException("The password is not correct. Please retry");
+			}
+			log.info("FunctionLogin - searchEmployee - END");
+			return EmployeeBeanPopulator.populateBean(searchResult);
 		}catch (SQLException e) {
+			log.error("FunctionLogin - searchEmployee - SQLException - somthing went wrong during DB connection");
 			throw new SQLException("Something went wrong. Please");
 		}
-
-		//TODO to complete with refreshPage logic
-		return loginEmployeeBean;
 	}
 
 }

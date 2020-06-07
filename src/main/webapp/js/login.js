@@ -41,3 +41,10 @@
     });
 
 })();
+
+
+window.addEventListener("load", function(){
+    if(sessionStorage.getItem("employeeEmail") != null){
+        sessionStorage.clear();
+    }
+});

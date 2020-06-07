@@ -44,7 +44,6 @@ public class EmployeeBeanPopulator {
         if (StringUtils.isNotEmpty(req.getParameter(MOConstants.REFRESH))) {
             //TODO da verificare
             toPopulate.setEmployeeId(Integer.parseInt(req.getParameter(MOConstants.EMPLOYEE_ID_DB)));
-            toPopulate.setRefreshPage(true);
         }
 
         return toPopulate;

@@ -39,29 +39,6 @@ public class FunctionPopulateHomePage extends GenericFunction {
     }
 
     /**
-     * Search all active meetings were the user is invited
-     * @param employeeBean
-     * @return List<MeetingBean>
-     * @throws AppCrash
-     */
-    public List<MeetingBean> searchEmployeeInvitedActiveMeetings(EmployeeBean employeeBean) throws AppCrash {
-        try(Connection conn = DbConnection.getInstance().getConnection();) {
-            MeetingsDao meetingsDao = new MeetingsDao(conn);
-            List<MeetingBean> listToReturn = new ArrayList();
-            ResultSet searchResult = meetingsDao.searchInvitedMeetingsByEmployee(employeeBean);
-
-            while(searchResult.next()) {
-                listToReturn.add(MeetingBeanPopulator.getInstance().populateMeeting(searchResult));
-            }
-
-            return listToReturn;
-        }catch (SQLException | ParseException e) {
-            throw new AppCrash("Something went wrong. Please contact support!");
-        }
-    }
-
-
-    /**
      * @return List<EmployeeBean>
      * @throws SQLException
      */

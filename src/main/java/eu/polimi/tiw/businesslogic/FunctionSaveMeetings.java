@@ -8,6 +8,7 @@ import eu.polimi.tiw.exception.*;
 import eu.polimi.tiw.populator.*;
 import eu.polimi.tiw.request.*;
 import org.apache.commons.lang3.exception.*;
+import org.apache.log4j.*;
 
 import java.sql.*;
 import java.text.*;
@@ -19,6 +20,7 @@ import java.util.*;
  */
 public class FunctionSaveMeetings extends GenericFunction{
 
+    private static Logger log = Logger.getLogger(FunctionSaveMeetings.class);
     /**
      * This method is called to save a new meeting
      * @param saveMeetingRequest
@@ -27,13 +29,14 @@ public class FunctionSaveMeetings extends GenericFunction{
      * @throws MySQLIntegrityConstraintViolationException
      */
     public int insertNewMeeting(SaveMeetingRequest saveMeetingRequest) throws SQLException, AppCrash {
+        log.info("FunctionSaveMeetings - insertNewMeeting - START");
         int savedMeetingId = 0;
         try(Connection conn = DbConnection.getInstance().getConnection();) {
             MeetingsDao meetingsDao = new MeetingsDao(conn);
 
             MeetingBean meetingBeanToSave = MeetingBeanPopulator.getInstance().populateMeetingInsert(saveMeetingRequest);
             savedMeetingId = meetingsDao.insertMeeting(meetingBeanToSave);
-
+            log.info("FunctionSaveMeetings - insertNewMeeting - END");
         } catch (SQLException e) {
             throw new SQLException("Something went wrong. Please contact support!");
         } catch(ParseException ex){
@@ -52,11 +55,12 @@ public class FunctionSaveMeetings extends GenericFunction{
      * @throws MySQLIntegrityConstraintViolationException
      */
     public void insertNewMeetingEmployeesRelations(EmployeeMeetingBean employeeMeetingBean) throws SQLException {
+        log.info("FunctionSaveMeetings - insertNewMeetingEmployeesRelations - START");
         try(Connection conn = DbConnection.getInstance().getConnection();) {
 
             EmployeeMeetingsDao employeeMeetingsDao = new EmployeeMeetingsDao(conn);
             employeeMeetingsDao.insertMeetingEmployeeRelation(employeeMeetingBean);
-
+            log.info("FunctionSaveMeetings - insertNewMeetingEmployeesRelations - END");
         }catch (SQLException e) {
             throw new SQLException("Something went wrong. Please contact support!");
         }
@@ -68,6 +72,7 @@ public class FunctionSaveMeetings extends GenericFunction{
      * @throws SQLException
      */
     public MeetingBean searchMeetingById(int meetingId) throws SQLException, AppCrash {
+        log.info("FunctionSaveMeetings - searchMeetingById - START");
         try(Connection conn = DbConnection.getInstance().getConnection();) {
 
             MeetingsDao meetingsDao = new MeetingsDao(conn);
@@ -76,6 +81,7 @@ public class FunctionSaveMeetings extends GenericFunction{
             if(resultSet.next()) {
                 meetingBeanToReturn = MeetingBeanPopulator.getInstance().populateMeeting(resultSet);
             }
+            log.info("FunctionSaveMeetings - searchMeetingById - END");
             return meetingBeanToReturn;
 
         }catch (SQLException e) {
@@ -86,6 +92,7 @@ public class FunctionSaveMeetings extends GenericFunction{
     }
 
     public List<EmployeeBean> searchInvitedEmployeesByEmail(List<String> invitedEmployeesEmail) throws AppCrash, SQLException {
+        log.info("FunctionSaveMeetings - searchInvitedEmployeesByEmail - START");
         List<EmployeeBean> employeeListToReturn = new ArrayList<>();
 
         try(Connection conn = DbConnection.getInstance().getConnection();) {
@@ -102,6 +109,7 @@ public class FunctionSaveMeetings extends GenericFunction{
         }catch (SQLException e) {
             throw new SQLException("Something went wrong. Please contact support!");
         }
+        log.info("FunctionSaveMeetings - searchInvitedEmployeesByEmail - END");
         return employeeListToReturn;
     }
 }

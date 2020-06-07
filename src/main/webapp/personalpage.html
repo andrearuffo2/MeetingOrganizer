@@ -85,6 +85,7 @@
 </form>
 <div class="btn-container">
     <button id="myBtn" class="modal-button" onclick="showModal()">Click to select members</button>
+    <button id="logoutBtn" class="modal-button" onclick="logout()" style="float: right">Logout</button>
 </div>
 
 <!-- The Modal -->
@@ -110,10 +111,6 @@
            document.getElementById("homepageMessage").innerHTML = "";
            document.getElementById("homePageDiv").style.display = "none";
        }
-    });
-
-    window.addEventListener("beforeunload", function(){
-        sessionStorage.clear();
     });
 
     window.addEventListener("load", function(){

@@ -30,17 +30,8 @@ public class EmployeeBean {
     private String surname;
     private String email;
     private String passKey;
-    private boolean refreshPage;
 
     public EmployeeBean() {
-    }
-
-    public boolean isRefreshPage() {
-        return this.refreshPage;
-    }
-
-    public void setRefreshPage(boolean refreshPage) {
-        this.refreshPage = refreshPage;
     }
 
     public String getEmail() {
