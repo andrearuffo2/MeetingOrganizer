@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <title>MeetingOrganizer - Register</title>
+  <script src="js/registration.js" defer></script>
+  <script src="js/utils.js" defer></script>
+</head>
+
+<body>
+
+<form action="#" name="vForm">
+  <div class="container">
+    <h1>Register </h1>
+    <p>Please fill in this form to create an account.</p>
+    <hr>
+
+    <label for="name"><b>Nome</b></label>
+    <input type="text" placeholder="Name" name="name" onfocus="hideError('errorName')" onblur="validateName('errorName')" required>
+    <div class="errorDiv" id="errorName" style="display: none"></div>
+
+    <label for="surname"><b>Cognome</b></label>
+    <input type="text" placeholder="Surname" name="surname" onfocus="hideError('errorSurname')"onblur="validateName('errorSurname')" required>
+    <div class="errorDiv" id="errorSurname" style="display: none"></div>
+
+    <label for="email"><b>Email</b></label>
+    <input type="email" placeholder="Enter Email" name="email" onfocus="hideError('errorEmail')" onblur="validateEmail('errorEmail')" required>
+    <div class="errorDiv" id="errorEmail" style="display: none"></div>
+
+    <label for="psw"><b>Password</b></label>
+    <input type="password" placeholder="Enter Password" name="psw" maxlength="15" onfocus="hideError('errorPsw')" onblur="validatePsw('errorPsw')"required>
+    <div class="errorDiv" id="errorPsw" style="display: none"></div>
+
+    <label for="confpsw"><b>Password</b></label>
+    <input type="password" placeholder="Retype Password" name="confpsw" maxlength="15" onfocus="hideError('errorConfirmPassword')" onblur="validateConfPsw('errorConfirmPassword')"required>
+    <div class="errorDiv" id="errorConfirmPassword" style="display: none"></div>
+
+    <hr>
+  </div>
+  <button type="button" id="registrationbutton" class="registerbtn">Register</button>
+  <div class="container signin">
+    <p>Already have an account? <a href="login.html">Sign in</a>.</p>
+  </div>
+</form>
+
+<div class="container" id="errorDiv" style="display: none">
+  <p id="errormessage" style="color: red; font-weight: bold;"></p>
+</div>
+
+</body>
+</html>

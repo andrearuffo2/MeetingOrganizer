@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Employee's personal page</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script src="js/homepage.js" defer></script>
+    <script src="js/utils.js" defer></script>
+</head>
+
+<body>
+<div id="homePageDiv" style="text-align: center; display: none">
+    <h1 id="homepageMessage"></h1>
+</div>
+<div class="container">
+    <h1>Welcome <span id="employee_username"></span></h1>
+    <p>Here are displayed your next mettings</p>
+
+    <!-- l'Avevo usato per popolare la modale. Lo recupero dalla sessione ora. Da cancellare in seguito   -->
+    <!-- <input type="text" id="loggedEmployeeEmail" style="display: none">-->
+    <div class="table-container">
+
+        <table border ="1" align="center">
+            <thead>
+                <caption><h3>Employee OWN meetings list</h3></caption>
+                <tr bgcolor="4CAF50">
+                    <th><b>Meeting title</b></th>
+                    <th><b>Meeting Data</b></th>
+                    <th><b>Meeting Hour</b></th>
+                    <th><b>Meeting Duration</b></th>
+                    <th><b>Number of partecipants</b></th>
+                </tr>
+            </thead>
+            <tbody id="ownMeetingsTableBody">
+            <!--    javascript will populate the body-->
+            </tbody>
+        </table>
+
+        <table border ="1" align="center">
+            <caption><h3>Employee Invited meetings list</h3></caption>
+            <thead>
+                <tr bgcolor="4CAF50">
+                    <th><b>Meeting title</b></th>
+                    <th><b>Meeting Data</b></th>
+                    <th><b>Meeting Hour</b></th>
+                    <th><b>Meeting Duration</b></th>
+                    <th><b>Number of partecipants</b></th>
+                </tr>
+            </thead>
+            <tbody id="invitedMeetingsTableBody">
+            <!--    javascript will populate the body-->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<form id="meetForm" action="#">
+
+    <div class="container">
+        <h1 style="text-align: center">Plan a new meeting</h1>
+        <p>Complete all the information below to insert new meeting.</p>
+        <hr>
+        <p id="fieldEmptyErrorParagraph" style="text-align:center; color:#ff0000; display:none; font-weight: bold;"></p>
+        <label for="title"><b>Meeting title</b></label>
+        <input id="title" type="text" placeholder="Enter meeting title" name="title" onfocus="hidetitleError()" onfocusout="validateTitle()" >
+        <p id="meetingTitleError" class="errorFormParagraph" style="display: none; "></p>
+
+        <label for="date"><b>Meeting date</b></label>
+        <input id="date" type="date" placeholder="Enter meeting's date" name="date" onfocus="hideDateError()" onfocusout="validateDate()">
+        <p id="meetingDateError" class="errorFormParagraph" style="display: none; "></p>
+
+        <label for="hour"><b>Meeting hour</b></label>
+        <input id="hour" type="time" placeholder="Enter meeting's" name="hour" onfocus="hideHourError()" onfocusout="validateHour()">
+        <p id="meetingHourError" class="errorFormParagraph" style="display: none; "></p>
+
+        <label for="duration"><b>Meeting duration</b></label>
+        <input id="duration" type="number" placeholder="Enter meeting's duration" name="duration" onfocus="hideDurationError()" onfocusout="validateDuration()">
+        <p id="meetingDurationError" class="errorFormParagraph" style="display: none; "></p>
+
+        <label for="members"><b>Meeting members number</b></label>
+        <input id="members" type="number" placeholder="Enter maximum number of members" name="members" onfocus="hideMembersError()" onfocusout="validateMembers()">
+        <p id="meetingMembersError" class="errorFormParagraph" style="display: none; "></p>
+        <hr>
+    </div>
+</form>
+<div class="btn-container">
+    <button id="myBtn" class="modal-button" onclick="showModal()">Click to select members</button>
+</div>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+<!--    javascript will populate the modal-->
+</div>
+<!-- The Error Modal -->
+<div id="errorModal" class="modal">
+    <div style="text-align: center;" class="modal-content">
+        <p id="cancelErrorParagraph" style="color: red;"></p>
+        <div class="btn-modal-container">
+            <button type="button" class="modal-button" id="hpButton" onclick="backHomePage()">Back to the employee homepage</button>
+        </div>
+    </div>
+
+</div>
+</body>
+<script>
+
+    //After an error message in the home page or a success meeting insert. With a click the message will be hide.
+    document.addEventListener("click", function(){
+       if(document.getElementById("homePageDiv").style.display == "block"){
+           document.getElementById("homepageMessage").innerHTML = "";
+           document.getElementById("homePageDiv").style.display = "none";
+       }
+    });
+
+    window.addEventListener("beforeunload", function(){
+        sessionStorage.clear();
+    });
+
+    window.addEventListener("load", function(){
+        if(sessionStorage.getItem("employeeEmail") == null){
+            alert("Insert your credential and login please!");
+            window.location.href = "login.html";
+        }
+    });
+
+</script>
+</html>

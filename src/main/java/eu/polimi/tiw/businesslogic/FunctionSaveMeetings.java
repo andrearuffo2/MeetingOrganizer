@@ -4,6 +4,7 @@ import com.mysql.jdbc.exceptions.*;
 import eu.polimi.tiw.bean.*;
 import eu.polimi.tiw.common.*;
 import eu.polimi.tiw.dao.*;
+import eu.polimi.tiw.exception.*;
 import eu.polimi.tiw.populator.*;
 import eu.polimi.tiw.request.*;
 import org.apache.commons.lang3.exception.*;
@@ -34,35 +35,14 @@ public class FunctionSaveMeetings extends GenericFunction{
             savedMeetingId = meetingsDao.insertMeeting(meetingBeanToSave);
 
         } catch (SQLException e) {
-            if(ExceptionUtils.indexOfThrowable(e.getCause(), MySQLIntegrityConstraintViolationException.class) != -1) {
-                // exception is or has a cause of type ExpectedException.class
-                throw new MySQLIntegrityConstraintViolationException("You can't plan another meeting organized by you at same hour");
-            }
-            throw new SQLException("Something went wrong while querying the db");
-        } catch (Exception e){
-            throw new AppCrash(e.getMessage());
+            throw new SQLException("Something went wrong. Please contact support!");
+        } catch(ParseException ex){
+            throw new AppCrash(ex.getMessage());
         }
         return savedMeetingId;
     }
 
-    /**
-     * @return
-     * @throws AppCrash
-     * @throws SQLException
-     */
-    public List<EmployeeBean> searchAllEmployee() throws AppCrash, SQLException {
-        try(Connection conn = DbConnection.getInstance().getConnection();) {
-            EmployeeDao employeeDao = new EmployeeDao(conn);
-            List<EmployeeBean> listToReturn = new ArrayList();
-            ResultSet searchResult = employeeDao.searchAllEmployee();
-            while(searchResult.next()) {
-                listToReturn.add(EmployeeBeanPopulator.getInstance().populateBean(searchResult));
-            }
-            return listToReturn;
-        }catch (SQLException e) {
-            throw new SQLException("Something went wrong while querying the db");
-        }
-    }
+
 
     /**
      * This method is called to save a new meetingsEmployee relations into db
@@ -78,7 +58,7 @@ public class FunctionSaveMeetings extends GenericFunction{
             employeeMeetingsDao.insertMeetingEmployeeRelation(employeeMeetingBean);
 
         }catch (SQLException e) {
-            throw new SQLException("Something went wrong while querying the db");
+            throw new SQLException("Something went wrong. Please contact support!");
         }
     }
 
@@ -99,7 +79,7 @@ public class FunctionSaveMeetings extends GenericFunction{
             return meetingBeanToReturn;
 
         }catch (SQLException e) {
-            throw new SQLException("Something went wrong while querying the db");
+            throw new SQLException("Something went wrong. Please contact support!");
         } catch (ParseException ex){
             throw new AppCrash("Something went wrong. Please contact support!");
         }
@@ -120,7 +100,7 @@ public class FunctionSaveMeetings extends GenericFunction{
                 employeeListToReturn.add(EmployeeBeanPopulator.populateBean(resultSet));
             }
         }catch (SQLException e) {
-            throw new SQLException("Something went wrong while querying the db");
+            throw new SQLException("Something went wrong. Please contact support!");
         }
         return employeeListToReturn;
     }

@@ -2,6 +2,7 @@ package eu.polimi.tiw.validation;
 
 import eu.polimi.tiw.bean.*;
 import eu.polimi.tiw.common.*;
+import eu.polimi.tiw.exception.*;
 import org.apache.commons.lang3.*;
 
 public class Validator {
@@ -27,5 +28,12 @@ public class Validator {
         if (!Utils.regExMatches(EmployeeBean.Parameters.password.regEx(), employeeBean.getPassKey()))
             throw new AppCrash("invalid parameter employee name");
 
+    }
+
+    public static void validateLogin(EmployeeBean employeeBean) throws AppCrash {
+        if (StringUtils.isEmpty(employeeBean.getEmail()))
+            throw new AppCrash("Employee email must not be null or empty");
+        if (StringUtils.isEmpty(employeeBean.getPassKey()))
+            throw new AppCrash("Employee passkey must not be null or empty");
     }
 }

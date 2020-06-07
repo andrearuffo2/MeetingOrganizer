@@ -1,4 +1,4 @@
-package eu.polimi.tiw.common;
+package eu.polimi.tiw.exception;
 
 /**
  * @author Andrea Ruffo

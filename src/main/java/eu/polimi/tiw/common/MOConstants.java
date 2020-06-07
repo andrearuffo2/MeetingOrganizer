@@ -14,7 +14,7 @@ public class MOConstants {
     public static String MEETING_DURATION_DB = "durata";
     public static String MEETING_INVOLVED_EMPLOYEE_NUMBER_DB = "numero_partecipanti";
     public static String MEETING_USERNAME_ORGANIZATOR_DB = "username_dipendente";
-    public static final String COOKIE_NAME = "user";
+    public static final String CONSTRAINTS_VIOLATION = "You can't plan another meeting organized by you at same hour";
 
     //REQUEST REGISTER-LOGIN
     public static String NAME = "name";
@@ -23,12 +23,10 @@ public class MOConstants {
     public static String PASSWORD = "psw";
     public static String REFRESH = "refresh";
 
-    //REQUEST MEETING
-    public static String MEETING_TITLE = "name";
-    public static String MEETING_DATE = "surname";
-    public static String MEETING_HOUR = "email";
-    public static String MEETING_DURATION = "psw";
-    public static String MEETING_MEMBERS  = "refresh";
+    //SESSION
+    public static String SESSION_ATTRIBUTE  = "employee";
+    public static String SESSION_EXPIRED_MESSAGE  = "Sessione expired. You will be redirected to the login page in a while!";
+
 
     public MOConstants() {
     }

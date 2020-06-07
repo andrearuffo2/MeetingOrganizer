@@ -10,6 +10,7 @@ import java.util.List;
 import eu.polimi.tiw.bean.*;
 import eu.polimi.tiw.common.*;
 import eu.polimi.tiw.dao.*;
+import eu.polimi.tiw.exception.*;
 import eu.polimi.tiw.populator.*;
 
 /**
@@ -33,62 +34,20 @@ public class FunctionLogin extends GenericFunction{
 			if (!loginEmployeeBean.isRefreshPage()) {
 				ResultSet searchResult = employeeDao.searchEmployee(loginEmployeeBean.getEmail());
 				if (!searchResult.next()) {
-					throw new AppCrash("An user with this email is not present in our system. Please register!");
+					throw new EmployeeNotFoundException("An user with this email is not present in our system. Please register!");
 				}
 
 				if (!Encription.verifyHash(loginEmployeeBean.getPassKey(), searchResult.getString(MOConstants.EMPLOYEE_PASSKEY_DB))) {
-					throw new AppCrash("The password is not correct. Please retry");
+					throw new BadPasswordException("The password is not correct. Please retry");
 				}
 				return EmployeeBeanPopulator.populateBean(searchResult);
 			}
 		}catch (SQLException e) {
-			throw new SQLException("Something went wrong while querying the db");
+			throw new SQLException("Something went wrong. Please");
 		}
 
 		//TODO to complete with refreshPage logic
 		return loginEmployeeBean;
 	}
 
-	public List<MeetingBean> searchEmployeeOwnActiveMeetings(EmployeeBean employeeBean) throws AppCrash, SQLException {
-		try(Connection conn = DbConnection.getInstance().getConnection();) {
-			MeetingsDao meetingsDao = new MeetingsDao(conn);
-			List<MeetingBean> listToReturn = new ArrayList();
-			ResultSet searchResult = meetingsDao.searchOwnMeetingsByEmployee(employeeBean);
-
-			while(searchResult.next()) {
-				listToReturn.add(MeetingBeanPopulator.getInstance().populateMeeting(searchResult));
-			}
-
-			return listToReturn;
-		}catch (SQLException e) {
-			throw new SQLException("Something went wrong while querying the db");
-		} catch (ParseException ex){
-			throw new AppCrash("Something went wrong. Please contact support!");
-		}
-	}
-
-	/**
-	 * Search all active meetings were the user is invited
-	 * @param employeeBean
-	 * @return
-	 * @throws AppCrash
-	 * @throws SQLException
-	 */
-	public List<MeetingBean> searchEmployeeInvitedActiveMeetings(EmployeeBean employeeBean) throws AppCrash, SQLException {
-		try(Connection conn = DbConnection.getInstance().getConnection();) {
-			MeetingsDao meetingsDao = new MeetingsDao(conn);
-			List<MeetingBean> listToReturn = new ArrayList();
-			ResultSet searchResult = meetingsDao.searchInvitedMeetingsByEmployee(employeeBean);
-
-			while(searchResult.next()) {
-				listToReturn.add(MeetingBeanPopulator.getInstance().populateMeeting(searchResult));
-			}
-
-			return listToReturn;
-		}catch (SQLException e) {
-			throw new SQLException("Something went wrong while querying the db");
-		} catch (ParseException ex){
-			throw new AppCrash("Something went wrong. Please contact support!");
-		}
-	}
 }

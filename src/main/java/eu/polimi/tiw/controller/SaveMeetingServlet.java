@@ -5,6 +5,7 @@ import com.mysql.jdbc.exceptions.*;
 import eu.polimi.tiw.bean.*;
 import eu.polimi.tiw.businesslogic.*;
 import eu.polimi.tiw.common.*;
+import eu.polimi.tiw.exception.*;
 import eu.polimi.tiw.request.*;
 
 import javax.servlet.*;
@@ -20,9 +21,9 @@ import java.util.*;
  *
  */
 @WebServlet("/saveNewMeeting")
-public class SaveMeetingServlet extends GenericServlet{
+public class SaveMeetingServlet extends AbstractServlet {
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         Gson requestJson = new Gson();
         SaveMeetingRequest saveMeetingRequest = requestJson.fromJson(getBody(request), SaveMeetingRequest.class);
@@ -30,7 +31,14 @@ public class SaveMeetingServlet extends GenericServlet{
         FunctionSaveMeetings functionSaveMeetings = new FunctionSaveMeetings();
         List<EmployeeBean> invitedEmployee = new ArrayList<>();
         EmployeeBean employeeBean = new EmployeeBean();
-        try{
+        try {
+
+            //verify that sessione has not expired
+            if (request.getSession() == null || request.getSession().getAttribute(MOConstants.SESSION_ATTRIBUTE) == null) {
+                throw new SessionExpiredException("");
+            }
+
+            //Searching meeting organizator
             employeeBean = functionSaveMeetings.searchEmployee(saveMeetingRequest.getMeetingOrganizator());
             int savedMeetingId = functionSaveMeetings.insertNewMeeting(saveMeetingRequest);
             invitedEmployee = functionSaveMeetings.searchInvitedEmployeesByEmail(saveMeetingRequest.getInvitedEmployeeList());
@@ -38,38 +46,47 @@ public class SaveMeetingServlet extends GenericServlet{
             //Add to the list also the meeting organizator to save it into the multi to multi support table
             invitedEmployee.add(employeeBean);
 
-            if(savedMeetingId != 0){
-                for(EmployeeBean singleRelatioToSave: invitedEmployee){
-                    EmployeeMeetingBean employeeMeetingBean = new EmployeeMeetingBean(singleRelatioToSave.getEmployeeId(), savedMeetingId);
-                    functionSaveMeetings.insertNewMeetingEmployeesRelations(employeeMeetingBean);
-                }
-                //Get the newly inserted meeting to return, to populate the table in the homepage
-                newlyInsertedMeeting = functionSaveMeetings.searchMeetingById(savedMeetingId);
-                if(newlyInsertedMeeting == null){
-                    throw new AppCrash("Something went wrong. Please contact the support team!");
-                }
-            } else {
-                throw new AppCrash("Something went wrong while saving the meeting");
+            for (EmployeeBean singleRelatioToSave : invitedEmployee) {
+                EmployeeMeetingBean employeeMeetingBean = new EmployeeMeetingBean(singleRelatioToSave.getEmployeeId(), savedMeetingId);
+                functionSaveMeetings.insertNewMeetingEmployeesRelations(employeeMeetingBean);
+            }
+
+            //Get the newly inserted meeting to return, to populate the table in the homepage
+            newlyInsertedMeeting = functionSaveMeetings.searchMeetingById(savedMeetingId);
+            if (newlyInsertedMeeting == null) {
+                throw new AppCrash("Something went wrong. Please contact the support!");
             }
 
             response.setContentType("application/json");
             String json = new Gson().toJson(newlyInsertedMeeting);
             response.getWriter().write(json);
-        } catch (SQLException throwables) {
+
+        } catch (SessionExpiredException sesExp) {
+            ErrorBean errorBean = new ErrorBean(MOConstants.SESSION_EXPIRED_MESSAGE);
+            String errorBeanJson = new Gson().toJson(errorBean);
+            response.setContentType("application/json");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write(errorBeanJson);
+        } catch (CreateMeetingException e) {
+            ErrorBean errorBean = new ErrorBean(e.getMessage());
+            String errorBeanJson = new Gson().toJson(errorBean);
+            response.setContentType("application/json");
+            response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+            response.getWriter().write(errorBeanJson);
+        } catch (EmployeeNotFoundException ex) {
+            ErrorBean errorBean = new ErrorBean(ex.getMessage());
+            String errorBeanJson = new Gson().toJson(errorBean);
+            response.setContentType("application/json");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write(errorBeanJson);
+        } catch (ConstraintViolationException throwables) {
             ErrorBean errorBean = new ErrorBean(throwables.getMessage());
             String errorBeanJson = new Gson().toJson(errorBean);
-            if(throwables instanceof MySQLIntegrityConstraintViolationException){
-                //assegna alla response il codice 404
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.setContentType("application/json");
-                response.getWriter().write(errorBeanJson);
-            } else {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.setContentType("application/json");
-                response.getWriter().write(errorBeanJson);
-            }
-        } catch (AppCrash appCrash) {
-            ErrorBean errorBean = new ErrorBean(appCrash.getMessage());
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setContentType("application/json");
+            response.getWriter().write(errorBeanJson);
+        }catch (AppCrash | SQLException genEx) {
+            ErrorBean errorBean = new ErrorBean(genEx.getMessage());
             String errorBeanJson = new Gson().toJson(errorBean);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.setContentType("application/json");

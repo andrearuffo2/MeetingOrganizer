@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  */
 @WebServlet("/logout")
-public class LogoutServlet extends GenericServlet {
+public class LogoutServlet extends AbstractServlet {
 
 	private static final long serialVersionUID = 1L;
 
@@ -34,6 +34,6 @@ public class LogoutServlet extends GenericServlet {
 			loginCookie.setMaxAge(0);
 			response.addCookie(loginCookie);
 		}
-		response.sendRedirect("login.jsp");
+//		response.sendRedirect("login.html");
 	}
 }

@@ -274,52 +274,9 @@ hr {
   opacity: 1;
 }
 
-/* Set a style for the submit button */
-.loginbtn {
-  background-color: #4CAF50;
-  color: white;
-  padding: 16px 20px;
-  margin: 8px 0;
-  border: none;
-  cursor: pointer;
-  width: 100px;
-  opacity: 0.9;
-}
-
-.calendarbtn {
-  background-color: #4CAF50;
-  color: white;
-  padding: 16px 20px;
-  margin: left;
-  border: none;
-  cursor: pointer;
-  width: 100px;
-  opacity: 0.9;
-}
-
-.projectbtn {
-   background-color: #4CAF50;
-   color: white;
-   margin-left: 20px;
-   border: none;
-   cursor: pointer;
-   width: 100px;
-   opacity: 0.9;
-   position: absolute;;
-}
-
 
 .loginbtn:hover {
   opacity: 1;
-}
-
-.calendarbtn:hover {
-  opacity: 1;
-}
-
-/* Add a blue text color to links */
-a {
-  color: dodgerblue;
 }
 
 .errorDiv{
@@ -332,80 +289,6 @@ a {
 .signin {
   background-color: #f1f1f1;
   text-align: center;
-}
-
-/*Calendario*/
-
-* {box-sizing: border-box;}
-ul {list-style-type: none;}
-body {font-family: Verdana, sans-serif;}
-
-.month {
-  padding: 70px 25px;
-  width: 100%;
-  background: #1abc9c;
-  text-align: center;
-}
-
-.month ul {
-  margin: 0;
-  padding: 0;
-}
-
-.month ul li {
-  color: white;
-  font-size: 20px;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-}
-
-.month .prev {
-  float: left;
-  padding-top: 10px;
-}
-
-.month .next {
-  float: right;
-  padding-top: 10px;
-}
-
-.weekdays {
-  margin: 0;
-  padding: 10px 0;
-  background-color: #ddd;
-}
-
-.weekdays li {
-  display: inline-block;
-  width: 13.6%;
-  color: #666;
-  text-align: center;
-}
-
-.days {
-  padding: 10px 0;
-  background: #eee;
-  margin: 0;
-}
-
-.days li {
-  list-style-type: none;
-  display: inline-block;
-  width: 13.6%;
-  text-align: center;
-  margin-bottom: 5px;
-  font-size:12px;
-  color: #777;
-}
-
-.days li .active {
-  padding: 5px;
-  background: #1abc9c;
-  color: white !important
-}
-
-h2 {
-  color: red;
 }
 
 /* Add media queries for smaller screens */
@@ -424,8 +307,7 @@ h2 {
 
 table {
 	font-family: arial, sans-serif;
-	border-collapse: collapse;
-	display: inline-grid;
+	display: inline-table;
 	margin: 10px;
 }
 
@@ -433,6 +315,7 @@ td, th {
 	border: 1px solid #dddddd;
 	text-align: left;
 	padding: 8px;
+	width: 120px;
 }
 
 tr:nth-child(even) {
@@ -497,6 +380,7 @@ caption{
 .btn-container{
 	text-align: center;
 	padding: 50px;
+	background-color: white;
 }
 
 .btn-modal-container{
@@ -509,12 +393,13 @@ caption{
 .modal-button {
 	background-color: #4CAF50;
 	color: white;
-	margin: 8px 0;
+	margin: 8px 5px;
 	border: none;
 	cursor: pointer;
 	opacity: 0.9;
 	font-size: 17px;
 	padding: 12px 35px;
+	display:inline-block;
 }
 
 .modal-button:hover {

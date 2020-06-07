@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script src="js/login.js" defer></script>
+    <script src="js/utils.js" defer></script>
+    <title>MeetingOrganizer - Login</title>
+</head>
+<body>
+
+<form action="#">
+    <div class="container">
+        <h1>Welcome to the Polimi report App</h1>
+        <p>Please enter you account detail to login.</p>
+        <hr>
+
+        <label for="email"><b>Email</b></label>
+        <input type="email" placeholder="Enter Email" name="email" required>
+
+        <label for="psw"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" name="psw" maxlength="15" required>
+
+    </div>
+    <button type="button" id="loginbutton" class="registerbtn">Login</button>
+
+</form>
+
+<form action="registrationData" method="GET">
+    <div class="container signin">
+        <p>You haven't an account? Register! <a href="registration.html">Sign up</a></p>
+    </div>
+</form>
+
+<div class="container" id="errorDiv" style="display: none">
+    <p id="errormessage" style="color: red; font-weight: bold;"></p>
+</div>
+
+</body>
+</html>
