@@ -70,4 +70,12 @@ public class MeetingBean {
     public void setMeetingUsernameOrganizator(String meetingUsernameOrganizator) {
         this.meetingUsernameOrganizator = meetingUsernameOrganizator;
     }
+
+    public int getMeetingDuration() {
+        return meetingDuration;
+    }
+
+    public void setMeetingDuration(int meetingDuration) {
+        this.meetingDuration = meetingDuration;
+    }
 }

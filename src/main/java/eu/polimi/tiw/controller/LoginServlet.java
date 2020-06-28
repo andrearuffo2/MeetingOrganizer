@@ -2,80 +2,76 @@ package eu.polimi.tiw.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.annotation.*;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 
 import eu.polimi.tiw.bean.*;
-import eu.polimi.tiw.businesslogic.FunctionLogin;
-import eu.polimi.tiw.common.AppCrash;
+import eu.polimi.tiw.businesslogic.*;
+import eu.polimi.tiw.common.*;
+import eu.polimi.tiw.exception.*;
 import eu.polimi.tiw.populator.*;
+import eu.polimi.tiw.response.*;
+import eu.polimi.tiw.validation.Validator;
+import org.apache.log4j.*;
+
 /**
  * @author Andrea Ruffo
  * @since 0.0.1-SNAPSHOT
  *
  */
 @WebServlet("/login")
-public class LoginServlet extends GenericServlet {
-	private static final long serialVersionUID = 1L;
+@MultipartConfig
+public class LoginServlet extends HttpServlet {
 
-	public LoginServlet() {
-	}
+	private static Logger log = Logger.getLogger(LoginServlet.class);
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+
+		log.info("LoginServlet - doPost - START");
 		RequestDispatcher disp;
+
+		// get current session, or initialise one if none
+		HttpSession session = request.getSession(true);
 		try {
 			FunctionLogin functionLogin = new FunctionLogin();
-			EmployeeBean employeeBean = functionLogin.searchEmployee(EmployeeBeanPopulator.populateLogin(request));
-			List<MeetingBean> employeeOwnActiveMeetings = functionLogin.searchEmployeeOwnActiveMeetings(employeeBean);
-			List<MeetingBean> employeeInvitedActiveMeetings = functionLogin.searchEmployeeInvitedActiveMeetings(employeeBean);
-			boolean isPresentCookie = false;
-			if (request.getCookies() != null || request.getCookies().length != 0) {
-				Cookie[] var8 = request.getCookies();
-				int var9 = var8.length;
-				int var10 = 0;
+			EmployeeBean employeeBeanForLogin = EmployeeBeanPopulator.populateLogin(request);
+			FunctionPopulateHomePage functionPopulateHomePage = new FunctionPopulateHomePage();
+			HomePageResponse homePageResponse = new HomePageResponse();
+			Validator.validateLogin(employeeBeanForLogin);
+			EmployeeBean employeeFound = functionLogin.searchEmployee(employeeBeanForLogin);
 
-				while(true) {
-					if (var10 >= var9) {
-						if (!isPresentCookie) {
-							Cookie loginCookie = new Cookie("user", String.valueOf(employeeBean.getEmployeeId()));
-							loginCookie.setMaxAge(1800);
-							response.addCookie(loginCookie);
-						}
-						break;
-					}
+			session.setAttribute(MOConstants.SESSION_ATTRIBUTE, request.getParameter(MOConstants.EMAIL));
 
-					Cookie cookie = var8[var10];
-					if ("user".equalsIgnoreCase(cookie.getName())) {
-						isPresentCookie = true;
-						response.addCookie(cookie);
-					} else {
-						response.addCookie(cookie);
-					}
+			homePageResponse.setEmployeeEmail(employeeFound.getEmail());
+			homePageResponse.setEmployeeOwnActiveMeetings(functionPopulateHomePage.searchEmployeeOwnActiveMeetings(employeeFound));
+			homePageResponse.setEmployeeInvitedActiveMeetings(functionPopulateHomePage.searchEmployeeInvitedActiveMeetings(employeeFound));
 
-					++var10;
-				}
-			}
+			request.setAttribute("homePageResponse", homePageResponse);
 
-			//Meetings list made by him
-			request.setAttribute("meetingsOwnList", employeeOwnActiveMeetings);
-			request.setAttribute("employeeData", employeeBean);
-			//Meetings list were the employee was invited
-			request.setAttribute("meetingsInvitedList", employeeInvitedActiveMeetings);
+			//Setting the homePageResponse to handle errors in the SelectEmployee view
+			session.setAttribute(MOConstants.USER_HOMEPAGE_DATA, homePageResponse);
+			log.info("LoginServlet - doPost - END");
+
 			disp = request.getRequestDispatcher("personalpage.jsp");
 			disp.forward(request, response);
-		} catch (AppCrash var12) {
+
+		} catch (BadPasswordException | EmployeeNotFoundException e) {
+			log.error("LoginServlet - doPost - employee or password were not correct!");
 			disp = request.getRequestDispatcher("login.jsp");
-			request.setAttribute("error", var12.getMessage());
-			disp.include(request, response);
-		} catch (SQLException var13) {
-			request.setAttribute("errorMessage", var13.getMessage());
-			disp = request.getRequestDispatcher("errorsystem.jsp");
+			request.setAttribute("error", e.getMessage());
+			disp.forward(request, response);
+		} catch(AppCrash ex){
+			log.error("LoginServlet - doPost - something went wrong. Please see the stacktrace!");
+			disp = request.getRequestDispatcher("login.jsp");
+			request.setAttribute("error", ex.getMessage());
+			disp.forward(request, response);
+		}catch (SQLException sqlEx) {
+			log.error("LoginServlet - doPost - something went wrong with db connection. Please see the stacktrace!");
+			disp = request.getRequestDispatcher("login.jsp");
+			request.setAttribute("error", sqlEx.getMessage());
 			disp.forward(request, response);
 		}
 

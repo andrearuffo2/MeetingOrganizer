@@ -1,17 +1,22 @@
 package eu.polimi.tiw.controller;
 
 import com.google.gson.*;
-import com.mysql.jdbc.exceptions.*;
 import eu.polimi.tiw.bean.*;
 import eu.polimi.tiw.businesslogic.*;
 import eu.polimi.tiw.common.*;
+import eu.polimi.tiw.exception.*;
+import eu.polimi.tiw.populator.*;
 import eu.polimi.tiw.request.*;
+import eu.polimi.tiw.response.*;
+import eu.polimi.tiw.validation.*;
+import org.apache.log4j.*;
 
 import javax.servlet.*;
 import javax.servlet.annotation.*;
 import javax.servlet.http.*;
 import java.io.*;
 import java.sql.*;
+import java.text.*;
 import java.util.*;
 
 /**
@@ -20,96 +25,138 @@ import java.util.*;
  *
  */
 @WebServlet("/saveNewMeeting")
-public class SaveMeetingServlet extends GenericServlet{
+public class SaveMeetingServlet extends HttpServlet {
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private static Logger log = Logger.getLogger(SaveMeetingServlet.class);
+    RequestDispatcher disp;
 
-        Gson requestJson = new Gson();
-        SaveMeetingRequest saveMeetingRequest = requestJson.fromJson(getBody(request), SaveMeetingRequest.class);
-        MeetingBean newlyInsertedMeeting = new MeetingBean();
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+
+        log.info("SaveMeetingServlet - doPost - START");
+        HttpSession session = request.getSession(false);
+
         FunctionSaveMeetings functionSaveMeetings = new FunctionSaveMeetings();
-        List<EmployeeBean> invitedEmployee = new ArrayList<>();
         EmployeeBean employeeBean = new EmployeeBean();
-        try{
-            employeeBean = functionSaveMeetings.searchEmployee(saveMeetingRequest.getMeetingOrganizator());
-            int savedMeetingId = functionSaveMeetings.insertNewMeeting(saveMeetingRequest);
+        HomePageResponse homePageResponse = new HomePageResponse();
+        SaveMeetingResponse toReturn = new SaveMeetingResponse();
+        FunctionPopulateHomePage functionPopulateHomePage = new FunctionPopulateHomePage();
+
+
+        List<EmployeeBean> othersEmployeeList = new ArrayList<>();
+        List<EmployeeBean> invitedEmployee = new ArrayList<>();
+
+        try {
+
+            log.info("SaveMeetingServlet - doPost - checking sessions...");
+            if(session == null
+                    || session.getAttribute(MOConstants.SESSION_ATTRIBUTE) == null
+                    || session.getAttribute(MOConstants.MEETING_TO_SAVE) == null
+                    || session.getAttribute(MOConstants.COMPLETE_EMPLOYEE_LIST) == null){
+                throw new SessionExpiredException("Session has exipired please re-login");
+            }
+
+            MeetingBean meetingBeanToSave = (MeetingBean) session.getAttribute(MOConstants.MEETING_TO_SAVE);
+            List<EmployeeBean> completeEmployeeList = (List<EmployeeBean>) session.getAttribute(MOConstants.COMPLETE_EMPLOYEE_LIST);
+
+            log.info("SaveMeetingServlet - doPost - Initializing request");
+            SaveMeetingPopulator saveMeetingPopulatorInstance = SaveMeetingPopulator.getInstance();
+
+            SaveMeetingRequest saveMeetingRequest = saveMeetingPopulatorInstance.populateMeetingToInsert(request, meetingBeanToSave);
             invitedEmployee = functionSaveMeetings.searchInvitedEmployeesByEmail(saveMeetingRequest.getInvitedEmployeeList());
+            othersEmployeeList = saveMeetingPopulatorInstance.fillNotInvitedEmployeeList(saveMeetingRequest.getInvitedEmployeeList(), completeEmployeeList);
+
+            Validator.validateSaveMeetingRequest(saveMeetingRequest, meetingBeanToSave.getInvolvedEmployeeNumber());
+
+            log.info("SaveMeetingServlet - doPost - Searching meeting organizator");
+            employeeBean = functionSaveMeetings.searchEmployee(saveMeetingRequest.getMeetingOrganizator());
+
+            log.info("SaveMeetingServlet - doPost - Inserting new meeting");
+            int savedMeetingId = functionSaveMeetings.insertNewMeeting(saveMeetingRequest);
 
             //Add to the list also the meeting organizator to save it into the multi to multi support table
             invitedEmployee.add(employeeBean);
 
-            if(savedMeetingId != 0){
-                for(EmployeeBean singleRelatioToSave: invitedEmployee){
-                    EmployeeMeetingBean employeeMeetingBean = new EmployeeMeetingBean(singleRelatioToSave.getEmployeeId(), savedMeetingId);
-                    functionSaveMeetings.insertNewMeetingEmployeesRelations(employeeMeetingBean);
-                }
-                //Get the newly inserted meeting to return, to populate the table in the homepage
-                newlyInsertedMeeting = functionSaveMeetings.searchMeetingById(savedMeetingId);
-                if(newlyInsertedMeeting == null){
-                    throw new AppCrash("Something went wrong. Please contact the support team!");
-                }
-            } else {
-                throw new AppCrash("Something went wrong while saving the meeting");
+            for (EmployeeBean singleRelatioToSave : invitedEmployee) {
+                EmployeeMeetingBean employeeMeetingBean = new EmployeeMeetingBean(singleRelatioToSave.getEmployeeId(), savedMeetingId);
+                functionSaveMeetings.insertNewMeetingEmployeesRelations(employeeMeetingBean);
             }
 
-            response.setContentType("application/json");
-            String json = new Gson().toJson(newlyInsertedMeeting);
-            response.getWriter().write(json);
-        } catch (SQLException throwables) {
-            ErrorBean errorBean = new ErrorBean(throwables.getMessage());
-            String errorBeanJson = new Gson().toJson(errorBean);
-            if(throwables instanceof MySQLIntegrityConstraintViolationException){
-                //assegna alla response il codice 404
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.setContentType("application/json");
-                response.getWriter().write(errorBeanJson);
-            } else {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.setContentType("application/json");
-                response.getWriter().write(errorBeanJson);
+            //Get the newly inserted meeting to return, to populate the table in the homepage
+            MeetingBean newlyInsertedMeeting = functionSaveMeetings.searchMeetingById(savedMeetingId);
+            if (newlyInsertedMeeting == null) {
+                throw new AppCrash("Something went wrong. Please contact the support!");
             }
-        } catch (AppCrash appCrash) {
-            ErrorBean errorBean = new ErrorBean(appCrash.getMessage());
-            String errorBeanJson = new Gson().toJson(errorBean);
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.setContentType("application/json");
-            response.getWriter().write(errorBeanJson);
+
+            //Populating homePage with new datas
+            homePageResponse.setEmployeeEmail(employeeBean.getEmail());
+            homePageResponse.setEmployeeOwnActiveMeetings(functionPopulateHomePage.searchEmployeeOwnActiveMeetings(employeeBean));
+            homePageResponse.setEmployeeInvitedActiveMeetings(functionPopulateHomePage.searchEmployeeInvitedActiveMeetings(employeeBean));
+            toReturn.setHomePageResponse(homePageResponse);
+
+            //Setting in session new user homepage data
+            session.setAttribute(MOConstants.USER_HOMEPAGE_DATA, homePageResponse);
+            emptyUselessSessionAttribute(session);
+
+            request.setAttribute("homePageResponse", homePageResponse);
+            log.info("SaveMeetingServlet - doPost - END");
+
+            disp = request.getRequestDispatcher("personalpage.jsp");
+            disp.forward(request, response);
+        } catch (MaximumNumberOfTryException maxEx) {
+            log.error("SaveMeetingServlet - doPost - too many bad attempts");
+            emptyUselessSessionAttribute(session);
+            disp = request.getRequestDispatcher("cancellation.jsp");
+            request.setAttribute("error", maxEx.getMessage());
+            disp.forward(request, response);
+        } catch (InvalidEmployeeNumberException numExp) {
+            log.error("SaveMeetingServlet - doPost - invalid employee number!");
+            disp = request.getRequestDispatcher("selectemployee.jsp");
+            request.setAttribute(MOConstants.INVITED_EMPLOYEE, invitedEmployee);
+            request.setAttribute(MOConstants.OTHERS_EMPLOYEE, othersEmployeeList);
+            request.setAttribute("error", numExp.getMessage());
+            disp.forward(request, response);
+        } catch (SessionExpiredException sesExp) {
+            log.error("SaveMeetingServlet - doPost - sessione expired!");
+            disp = request.getRequestDispatcher("login.jsp");
+            request.setAttribute("error", sesExp.getMessage());
+            disp.forward(request, response);
+        } catch (CreateMeetingException e) {
+            log.error("SaveMeetingServlet - doPost - Something went wrong during meeting save!");
+            disp = request.getRequestDispatcher("selectemployee.jsp");
+            request.setAttribute(MOConstants.INVITED_EMPLOYEE, invitedEmployee);
+            request.setAttribute(MOConstants.OTHERS_EMPLOYEE, othersEmployeeList);
+            request.setAttribute("error", e.getMessage());
+            disp.forward(request, response);
+        } catch (EmployeeNotFoundException ex) {
+            log.error("SaveMeetingServlet - doPost - EmployeeNotFoundException!");
+            session.invalidate();
+            disp = request.getRequestDispatcher("login.jsp");
+            request.setAttribute("error", ex.getMessage());
+            disp.forward(request, response);
+        } catch (ConstraintViolationException throwables) {
+            log.error("SaveMeetingServlet - doPost - duplicate meeting exception!");
+            disp = request.getRequestDispatcher("personalpage.jsp");
+            emptyUselessSessionAttribute(session);
+            request.setAttribute("error", throwables.getMessage());
+            disp.forward(request, response);
+        }catch (SQLException genEx) {
+            log.error("SaveMeetingServlet - doPost - something went wrong! See the stacktrace");
+            disp = request.getRequestDispatcher("login.jsp");
+            request.setAttribute("error", genEx.getMessage());
+            disp.forward(request, response);
+        } catch (AppCrash e) {
+            disp = request.getRequestDispatcher("selectemployee.jsp");
+            request.setAttribute(MOConstants.INVITED_EMPLOYEE, invitedEmployee);
+            request.setAttribute(MOConstants.OTHERS_EMPLOYEE, othersEmployeeList);
+            request.setAttribute("error", e.getMessage());
+            disp.forward(request, response);
         }
-
     }
 
-    public static String getBody(HttpServletRequest request)  {
-
-        String body = null;
-        StringBuilder stringBuilder = new StringBuilder();
-        BufferedReader bufferedReader = null;
-
-        try {
-            InputStream inputStream = request.getInputStream();
-            if (inputStream != null) {
-                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                char[] charBuffer = new char[128];
-                int bytesRead = -1;
-                while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
-                    stringBuilder.append(charBuffer, 0, bytesRead);
-                }
-            } else {
-                stringBuilder.append("");
-            }
-        } catch (IOException ex) {
-            // throw ex;
-            return "";
-        } finally {
-            if (bufferedReader != null) {
-                try {
-                    bufferedReader.close();
-                } catch (IOException ex) {
-
-                }
-            }
-        }
-
-        body = stringBuilder.toString();
-        return body;
+    public void emptyUselessSessionAttribute(HttpSession session){
+        session.removeAttribute(MOConstants.OTHERS_EMPLOYEE);
+        session.removeAttribute(MOConstants.INVITED_EMPLOYEE);
+        session.removeAttribute(MOConstants.COMPLETE_EMPLOYEE_LIST);
+        session.removeAttribute(MOConstants.MEETING_TO_SAVE);
     }
 }

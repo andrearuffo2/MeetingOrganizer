@@ -2,6 +2,7 @@ package eu.polimi.tiw.dao;
 
 import eu.polimi.tiw.bean.*;
 import eu.polimi.tiw.common.*;
+import eu.polimi.tiw.exception.*;
 import org.apache.commons.lang3.*;
 
 import java.sql.*;

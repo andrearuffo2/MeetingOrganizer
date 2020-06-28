@@ -1,137 +1,112 @@
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
-<%@page import="eu.polimi.tiw.bean.MeetingBean"%>
-<%@page import="eu.polimi.tiw.bean.EmployeeBean"%>
-<%@page import="java.util.ArrayList"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Employee's personal page</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
-    <script src="js/script.js"></script>
 </head>
 
-<body onload="retrieveAllEmployee();">
+<body>
 
-<%
-    String userName = null;
-    Cookie[] cookies = request.getCookies();
-    if(cookies !=null){
-        for(Cookie cookie : cookies){
-            if(cookie.getName().equals("user")) userName = cookie.getValue();
-        }
-    }
-    if(userName == null) response.sendRedirect("login.jsp");
-%>
-<div id="mainPageErrorDiv" style="text-align: center; display: none">
-    <h1 style="color: red"></h1>
+<%--Devo capire se mi serve--%>
+<div id="homePageDiv" style="text-align: center; display: none">
+    <h1 id="homepageMessage"></h1>
 </div>
 <div class="container">
-    <% EmployeeBean employeeBean = (EmployeeBean) request.getAttribute("employeeData");%>
-    <h1>Welcome <%=employeeBean.getName()%> <%=employeeBean.getSurname()%></h1>
+
+    <h1>Welcome <span id="employee_username">${homePageResponse.employeeEmail}</span></h1>
     <p>Here are displayed your next mettings</p>
-    <input type="text" id="loggedEmployeeEmail" style="display: none" value=<%=employeeBean.getEmail()%>>
+
     <div class="table-container">
-        <table border ="1" align="center" id="ownMeetingsTable">
-            <caption><h3>Employee OWN meetings list</h3></caption>
-            <tr bgcolor="4CAF50">
-                <th><b>Meeting title</b></th>
-                <th><b>Meeting Data</b></th>
-                <th><b>Meeting Hour</b></th>
-                <th><b>Meeting Duration</b></th>
-                <th><b>Number of partecipants</b></th>
-            </tr>
-            <%-- Fetching the attributes of the request object
-                 which was previously set by the servlet
-                  "StudentServlet.java"
-            --%>
-            <%ArrayList<MeetingBean> meetingBeanArrayList =
-                    (ArrayList<MeetingBean>)request.getAttribute("meetingsOwnList");
-                for(MeetingBean s:meetingBeanArrayList){%>
-                <%-- Arranging data in tabular form
-                --%>
-                <tr>
-                    <td><%=s.getMeetingTitle()%></td>
-                    <td><%=s.getMeetingData()%></td>
-                    <td><%=s.getMeetingHour()%></td>
-                    <td><%=s.getMeetingsDuration()%></td>
-                    <td><%=s.getInvolvedEmployeeNumber()%></td>
+
+        <table border ="1" align="center">
+            <thead>
+                <caption><h3>Employee OWN meetings list</h3></caption>
+                <tr bgcolor="4CAF50">
+                    <th><b>Meeting title</b></th>
+                    <th><b>Meeting Data</b></th>
+                    <th><b>Meeting Hour</b></th>
+                    <th><b>Meeting Duration</b></th>
+                    <th><b>Number of partecipants</b></th>
                 </tr>
-            <%}%>
+            </thead>
+            <tbody id="ownMeetingsTableBody">
+                <c:forEach items="${homePageResponse.employeeOwnActiveMeetings}" var="employeeOwnMeeting">
+                    <tr>
+                        <td>${employeeOwnMeeting.meetingTitle}</td>
+                        <td>${employeeOwnMeeting.meetingData}</td>
+                        <td>${employeeOwnMeeting.meetingHour}</td>
+                        <td>${employeeOwnMeeting.meetingDuration}</td>
+                        <td>${employeeOwnMeeting.involvedEmployeeNumber}</td>
+                    </tr>
+                </c:forEach>
+            </tbody>
         </table>
 
-        <%--<h1>Displaying Employee invited meetings list</h1>--%>
         <table border ="1" align="center">
             <caption><h3>Employee Invited meetings list</h3></caption>
-            <tr bgcolor="4CAF50">
-                <th><b>Meeting title</b></th>
-                <th><b>Meeting Data</b></th>
-                <th><b>Meeting Hour</b></th>
-                <th><b>Meeting Duration</b></th>
-                <th><b>Number of partecipants</b></th>
-            </tr>
-            <%-- Fetching the attributes of the request object
-                 which was previously set by the servlet
-                  "StudentServlet.java"
-            --%>
-            <tbody id="table-body">
-                <%ArrayList<MeetingBean> invitedMeetingBeanArrayList =
-                        (ArrayList<MeetingBean>)request.getAttribute("meetingsInvitedList");
-                    for(MeetingBean s:invitedMeetingBeanArrayList){%>
-                <%-- Arranging data in tabular form
-                --%>
-
-                <tr>
-                    <td><%=s.getMeetingTitle()%></td>
-                    <td><%=s.getMeetingData()%></td>
-                    <td><%=s.getMeetingHour()%></td>
-                    <td><%=s.getMeetingsDuration()%></td>
-                    <td><%=s.getInvolvedEmployeeNumber()%></td>
+            <thead>
+                <tr bgcolor="4CAF50">
+                    <th><b>Meeting title</b></th>
+                    <th><b>Meeting Data</b></th>
+                    <th><b>Meeting Hour</b></th>
+                    <th><b>Meeting Duration</b></th>
+                    <th><b>Number of partecipants</b></th>
                 </tr>
-                <%}%>
+            </thead>
+            <tbody id="invitedMeetingsTableBody">
+                <c:forEach items="${homePageResponse.employeeInvitedActiveMeetings}" var="employeeInvitedMeeting">
+                    <tr>
+                        <td>${employeeInvitedMeeting.meetingTitle}</td>
+                        <td>${employeeInvitedMeeting.meetingData}</td>
+                        <td>${employeeInvitedMeeting.meetingHour}</td>
+                        <td>${employeeInvitedMeeting.meetingDuration}</td>
+                        <td>${employeeInvitedMeeting.involvedEmployeeNumber}</td>
+                    </tr>
+                </c:forEach>
             </tbody>
         </table>
     </div>
-<div/>
+</div>
 
-<%--FORM to insert new meeting--%>
-        <form name="meetForm" action="login" method="POST">
+<form id="selectForm" action="selectMeetingEmployee" method="POST">
 
-            <div class="container">
-                <h1 style="text-align: center">Plan a new meeting</h1>
-                <p>Complete all the information below to insert new meeting.</p>
-                <hr>
-                <p id="fieldEmptyErrorParagraph" style="text-align:center; color:#ff0000; display:none; font-weight: bold;"></p>
-                <label for="title"><b>Meeting title</b></label>
-                <input id="title" type="text" placeholder="Enter meeting title" name="title" onfocus="hidetitleError()" onfocusout="validateTitle()" >
-                <p id="meetingTitleError" class="errorFormParagraph" style="display: none; "></p>
+    <div class="container">
+        <h1 style="text-align: center">Plan a new meeting</h1>
+        <p>Complete all the information below to insert new meeting.</p>
+        <hr>
 
-                <label for="date"><b>Meeting date</b></label>
-                <input id="date" type="date" placeholder="Enter meeting's date" name="date" onfocus="hideDateError()" onfocusout="validateDate()">
-                <p id="meetingDateError" class="errorFormParagraph" style="display: none; "></p>
+        <c:if test="${error!= null}">
+            <p id="fieldEmptyErrorParagraph" style="text-align:center; color:#ff0000; font-weight: bold;">${error}</p>
+        </c:if>
 
-                <label for="hour"><b>Meeting hour</b></label>
-                <input id="hour" type="time" placeholder="Enter meeting's" name="hour" onfocus="hideHourError()" onfocusout="validateHour()">
-                <p id="meetingHourError" class="errorFormParagraph" style="display: none; "></p>
+        <label for="title"><b>Meeting title</b></label>
+        <input id="title" type="text" placeholder="Enter meeting title" name="title" required>
 
-                <label for="duration"><b>Meeting duration</b></label>
-                <input id="duration" type="number" placeholder="Enter meeting's duration" name="duration" onfocus="hideDurationError()" onfocusout="validateDuration()">
-                <p id="meetingDurationError" class="errorFormParagraph" style="display: none; "></p>
+        <label for="date"><b>Meeting date</b></label>
+        <input id="date" type="date" placeholder="Enter meeting's date" name="date" required>
 
-                <label for="members"><b>Meeting members number</b></label>
-                <input id="members" type="number" placeholder="Enter maximum number of members" name="members" onfocus="hideMembersError()" onfocusout="validateMembers()">
-                <p id="meetingMembersError" class="errorFormParagraph" style="display: none; "></p>
+        <label for="hour"><b>Meeting hour</b></label>
+        <input id="hour" type="time" placeholder="Enter meeting's" name="hour" required>
 
-            </div>
-        </form>
-        <div class="btn-container">
-            <button id="myBtn" class="modal-button" onclick="showModal()">Click to select members</button>
-        </div>
+        <label for="duration"><b>Meeting duration</b></label>
+        <input id="duration" type="number" placeholder="Enter meeting's duration" name="duration" required>
 
-        <!-- The Modal -->
-        <div id="myModal" class="modal">
-            <%--javascript will populate the modal--%>
-        </div>
+        <label for="members"><b>Meeting members number</b></label>
+        <input id="members" type="number" placeholder="Enter maximum number of members" name="members" required>
+
+        <hr>
+    </div>
+
+</form>
+
+<form id="logoutForm" action="logout" method="POST"/>
+
+<div class="btn-container">
+    <button id="myBtn" type="submit" form="selectForm" class="modal-button">Click to select members</button>
+    <button id="logoutBtn" type="submit" form="logoutForm" class="modal-button" style="float: right">Logout</button>
+</div>
+
 </body>
 </html>

@@ -1,39 +1,30 @@
 package eu.polimi.tiw.controller;
 
+import org.apache.log4j.*;
+
 import java.io.IOException;
 
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.annotation.*;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
+
 /**
  * @author Andrea Ruffo
  * @since 0.0.1-SNAPSHOT
  *
  */
 @WebServlet("/logout")
-public class LogoutServlet extends GenericServlet {
+public class LogoutServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 1L;
-
+	private static Logger log = Logger.getLogger(LogoutServlet.class);
+	RequestDispatcher disp;
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		response.setContentType("text/html");
-		Cookie loginCookie = null;
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals("user")) {
-					loginCookie = cookie;
-					break;
-				}
-			}
-		}
-		if (loginCookie != null) {
-			loginCookie.setMaxAge(0);
-			response.addCookie(loginCookie);
-		}
-		response.sendRedirect("login.jsp");
+		log.info("LogoutServlet - doPost - START");
+
+		request.getSession().invalidate();
+		disp = request.getRequestDispatcher("login.jsp");
+		disp.forward(request, response);
+		log.info("LogoutServlet - doPost - END");
 	}
 }

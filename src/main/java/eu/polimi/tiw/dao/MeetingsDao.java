@@ -1,7 +1,9 @@
 package eu.polimi.tiw.dao;
 
+import com.mysql.jdbc.exceptions.*;
 import eu.polimi.tiw.bean.*;
 import eu.polimi.tiw.common.*;
+import eu.polimi.tiw.exception.*;
 
 import java.sql.*;
 
@@ -65,44 +67,51 @@ public class MeetingsDao extends GenericDao {
      * Method to save the meeting
      * @param meetingToSave
      */
-    public int insertMeeting(MeetingBean meetingToSave) throws SQLException {
+    public int insertMeeting(MeetingBean meetingToSave) throws ConstraintViolationException, SQLException, CreateMeetingException {
 
-        Statement statement;
-        ResultSet rs = null;
-        StringBuilder updateQuery = new StringBuilder();
-        statement = getConn().createStatement();
-        updateQuery.append(Config.getInstance().getProperty(INSERT_MEETING_QUERY));
-        updateQuery.append("'");
-        updateQuery.append(meetingToSave.getMeetingTitle());
-        updateQuery.append("','");
-        updateQuery.append(meetingToSave.getMeetingData());
-        updateQuery.append("','");
-        updateQuery.append(meetingToSave.getMeetingHour());
-        updateQuery.append("','");
-        updateQuery.append(meetingToSave.getMeetingsDuration());
-        updateQuery.append("','");
-        updateQuery.append(meetingToSave.getInvolvedEmployeeNumber());
-        updateQuery.append("','");
-        updateQuery.append(meetingToSave.getMeetingUsernameOrganizator());
-        updateQuery.append("');");
+        try {
+            Statement statement;
+            ResultSet rs = null;
+            StringBuilder updateQuery = new StringBuilder();
+            statement = getConn().createStatement();
+            updateQuery.append(Config.getInstance().getProperty(INSERT_MEETING_QUERY));
+            updateQuery.append("'");
+            updateQuery.append(meetingToSave.getMeetingTitle());
+            updateQuery.append("','");
+            updateQuery.append(meetingToSave.getMeetingData());
+            updateQuery.append("','");
+            updateQuery.append(meetingToSave.getMeetingHour());
+            updateQuery.append("','");
+            updateQuery.append(meetingToSave.getMeetingsDuration());
+            updateQuery.append("','");
+            updateQuery.append(meetingToSave.getInvolvedEmployeeNumber());
+            updateQuery.append("','");
+            updateQuery.append(meetingToSave.getMeetingUsernameOrganizator());
+            updateQuery.append("');");
 
-        int affectedRows = statement.executeUpdate(updateQuery.toString(), Statement.RETURN_GENERATED_KEYS);
-        if (affectedRows == 0) {
-            throw new SQLException("Creating user failed, no rows affected.");
-        }
-
-        int meetingId;
-        try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-            if (generatedKeys.next()) {
-                meetingId = generatedKeys.getInt(1);
+            int affectedRows = statement.executeUpdate(updateQuery.toString(), Statement.RETURN_GENERATED_KEYS);
+            if (affectedRows == 0) {
+                throw new CreateMeetingException("Creating meeting failed, no rows affected.");
             }
-            else {
-                throw new SQLException("Creating user failed, no ID obtained.");
+
+            int meetingId;
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    meetingId = generatedKeys.getInt(1);
+                } else {
+                    throw new CreateMeetingException("Creating meeting failed, no ID obtained.");
+                }
+            }
+            // To add eventually logs
+            statement.close();
+            return meetingId;
+        } catch (SQLException ex){
+            if(ex.getSQLState().startsWith("23")) {
+                throw new ConstraintViolationException(MOConstants.CONSTRAINTS_VIOLATION);
+            } else{
+                throw new SQLException(ex.getMessage());
             }
         }
-        // To add eventually logs
-        statement.close();
-        return meetingId;
     }
 
     public StringBuilder whereCondition() {

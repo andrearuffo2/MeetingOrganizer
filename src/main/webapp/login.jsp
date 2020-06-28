@@ -4,6 +4,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="css/style.css">
+    <title>Meeting Organizer</title>
 </head>
 <body>
 
@@ -17,22 +18,20 @@
         <input type="email" placeholder="Enter Email" name="email" required>
 
         <label for="psw"><b>Password</b></label>
-        <input type="password" placeholder="Enter Password" name="psw" maxlength="15" required>
+        <input type="password" placeholder="Enter Password" name="psw" required>
 
     </div>
     <button type="submit" class="registerbtn">Login</button>
 
 </form>
 
-<form action="registrationData" method="GET">
-    <div class="container signin">
-        <p>You havent an account? Register! <button type="submit" class="loginbtn">Sign up</button></p>
-    </div>
-</form>
+<div class="container signin">
+    <p>Already have an account? <a href="registration.jsp">Sign up</a>.</p>
+</div>
 
 <c:if test="${error!= null}">
     <div class="container">
-        <p><font color="red">${error}</font>
+        <p style="color:red;">${error}</p>
     </div>
 </c:if>
 

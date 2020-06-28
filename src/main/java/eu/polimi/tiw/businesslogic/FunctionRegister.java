@@ -6,8 +6,10 @@ import java.sql.SQLException;
 
 import eu.polimi.tiw.bean.*;
 import eu.polimi.tiw.common.*;
+import eu.polimi.tiw.controller.*;
 import eu.polimi.tiw.dao.*;
-import eu.polimi.tiw.repository.*;
+import eu.polimi.tiw.exception.*;
+import org.apache.log4j.*;
 
 /**
  * @author Andrea Ruffo
@@ -15,6 +17,7 @@ import eu.polimi.tiw.repository.*;
  */
 public class FunctionRegister extends GenericFunction{
 
+	private static Logger log = Logger.getLogger(FunctionRegister.class);
 	/**
 	 * This method will check if user already exists on db.
 	 * Is triggered by ajax call inside register.jsp page
@@ -24,12 +27,14 @@ public class FunctionRegister extends GenericFunction{
 	 * @throws SQLException
 	 */
 	public boolean isEmployeeAlreadyRegistered(EmployeeBean employeeBean) throws AppCrash, SQLException {
+		log.info("FunctionRegister - isEmployeeAlreadyRegistered - START");
 		try(Connection conn = DbConnection.getInstance().getConnection();) {
 			EmployeeDao employeeDao = new EmployeeDao(conn);
 			ResultSet searchResult = employeeDao.searchEmployee(employeeBean.getEmail());
 			if (!searchResult.next()) {
 				return false;
 			}
+			log.info("FunctionRegister - isEmployeeAlreadyRegistered - END");
 			return true;
 		}catch (SQLException e) {
 			throw new SQLException("Something went wrong while querying the db");
@@ -43,9 +48,11 @@ public class FunctionRegister extends GenericFunction{
 	 * @throws SQLException
 	 */
 	public void register(EmployeeBean employeeBean) throws AppCrash, SQLException {
+		log.info("FunctionRegister - register - START");
 		try(Connection conn = DbConnection.getInstance().getConnection();) {
 			EmployeeDao employeeDao = new EmployeeDao(conn);
 			employeeDao.insertUser(employeeBean);
+			log.info("FunctionRegister - register - END");
 		}catch (SQLException e) {
 			throw new SQLException("Something went wrong while querying the db");
 		}

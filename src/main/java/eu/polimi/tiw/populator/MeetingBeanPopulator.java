@@ -4,7 +4,9 @@ import eu.polimi.tiw.bean.*;
 import eu.polimi.tiw.common.*;
 import eu.polimi.tiw.request.*;
 
+import javax.servlet.http.*;
 import java.sql.*;
+import java.util.Date;
 import java.text.*;
 
 public class MeetingBeanPopulator {
@@ -37,10 +39,30 @@ public class MeetingBeanPopulator {
         return toReturn;
     }
 
+    public MeetingBean populateRequest(HttpServletRequest request) throws ParseException {
+        MeetingBean toReturn = new MeetingBean();
+        toReturn.setMeetingTitle(request.getParameter(MOConstants.MEETING_TITLE));
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String reqMeetingDate = request.getParameter(MOConstants.MEETING_DATE);
+        Date meetingDate = dateFormat.parse(reqMeetingDate);
+        toReturn.setMeetingData(meetingDate);
+
+        DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+        String reqMeetingTime = request.getParameter(MOConstants.MEETING_HOUR);
+        Time meetingHour = new Time(timeFormat.parse(reqMeetingTime).getTime());
+        toReturn.setMeetingHour(meetingHour);
+
+        toReturn.setInvolvedEmployeeNumber(Integer.parseInt(request.getParameter(MOConstants.MEETING_MEMBERS)));
+        toReturn.setMeetingsDuration(Integer.parseInt(request.getParameter(MOConstants.MEETING_DURATION)));
+        return toReturn;
+    }
+
+
     public MeetingBean populateMeetingInsert(SaveMeetingRequest request) throws ParseException {
         MeetingBean toReturn = new MeetingBean();
         toReturn.setMeetingTitle(request.getTitle());
-        Date meetingDate = new Date(request.getData().getTime());
+        java.sql.Date meetingDate = new java.sql.Date(request.getData().getTime());
         toReturn.setMeetingData(meetingDate);
         DateFormat timeFormat = new SimpleDateFormat("HH:mm");
         Time meetingHour = new Time(timeFormat.parse(request.getHour()).getTime());

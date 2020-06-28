@@ -3,17 +3,16 @@ package eu.polimi.tiw.controller;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.annotation.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 
 import eu.polimi.tiw.bean.*;
 import eu.polimi.tiw.businesslogic.*;
-import eu.polimi.tiw.common.*;
+import eu.polimi.tiw.exception.*;
 import eu.polimi.tiw.populator.*;
 import eu.polimi.tiw.validation.*;
+import org.apache.log4j.*;
 
 /**
  * @author Andrea Ruffo
@@ -21,51 +20,44 @@ import eu.polimi.tiw.validation.*;
  *
  */
 @WebServlet("/register")
-public class RegisterServlet extends GenericServlet {
+@MultipartConfig
+public class RegisterServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 1L;
+	private static Logger log = Logger.getLogger(RegisterServlet.class);
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		log.info("RegisterServlet - doPost - START");
 		RequestDispatcher disp;
 		try {
 			EmployeeBean employeeBean = EmployeeBeanPopulator.getInstance().populateRegister(request);
 			Validator.validateRegistration(employeeBean);
 			FunctionRegister functionRegistration = new FunctionRegister();
+			boolean employeeAlreadyRegistered = functionRegistration.isEmployeeAlreadyRegistered(employeeBean);
+			if(employeeAlreadyRegistered){
+				throw new AppCrash("An employee with this email is already registered");
+			}
 
 			//Check if user already exists
 			if(functionRegistration.isEmployeeAlreadyRegistered(employeeBean)){
 				throw new AppCrash("User already exists");
 			}
+
 			functionRegistration.register(employeeBean);
+			log.info("RegisterServlet - doPost - END");
 			disp = request.getRequestDispatcher("registrationsuccessfull.jsp");
 			disp.forward(request, response);
-
 		} catch (AppCrash e) {
-			request.setAttribute("errorMessage", e.getMessage());
-			disp = request.getRequestDispatcher("errorapp.jsp");
+			log.error("RegisterServlet - doPost - Something went wrong! Please see the stacktrace");
+			disp = request.getRequestDispatcher("registration.jsp");
+			request.setAttribute("error", e.getMessage());
+			disp.include(request, response);
+		} catch (SQLException sqlEx) {
+			log.error("RegisterServlet - doPost - Something went wrong with db connection! Please see the stacktrace");
+			disp = request.getRequestDispatcher("login.jsp");
+			request.setAttribute("error", sqlEx.getMessage());
 			disp.forward(request, response);
-		} catch (SQLException e) {
-			request.setAttribute("errorMessage", e.getMessage());
-			disp = request.getRequestDispatcher("errorsystem.jsp");
-			disp.forward(request, response);
-		}
-	}
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-		EmployeeBean employeeBean = new EmployeeBean();
-		employeeBean.setEmail(request.getParameter(MOConstants.EMAIL));
-		FunctionRegister registerFunction = new FunctionRegister();
-		try {
-			boolean employeeAlreadyRegistered = registerFunction.isEmployeeAlreadyRegistered(employeeBean);
-			response.setContentType("application/json");
-			response.getWriter().write(String.valueOf(employeeAlreadyRegistered));
-		} catch (AppCrash | SQLException e) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.setContentType("application/json");
-			response.getWriter().write(String.valueOf(true));
 		}
 	}
 
