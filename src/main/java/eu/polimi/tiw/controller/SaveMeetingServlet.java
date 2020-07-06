@@ -60,8 +60,15 @@ public class SaveMeetingServlet extends HttpServlet {
 
             log.info("SaveMeetingServlet - doPost - Initializing request");
             SaveMeetingPopulator saveMeetingPopulatorInstance = SaveMeetingPopulator.getInstance();
+            SaveMeetingRequest saveMeetingRequest = new SaveMeetingRequest();
 
-            SaveMeetingRequest saveMeetingRequest = saveMeetingPopulatorInstance.populateMeetingToInsert(request, meetingBeanToSave);
+            try {
+                 saveMeetingRequest = saveMeetingPopulatorInstance.populateMeetingToInsert(request, meetingBeanToSave);
+            } catch (InvalidEmployeeNumberException noEmpEx){
+                othersEmployeeList = completeEmployeeList;
+                throw new InvalidEmployeeNumberException(noEmpEx.getMessage());
+            }
+
             invitedEmployee = functionSaveMeetings.searchInvitedEmployeesByEmail(saveMeetingRequest.getInvitedEmployeeList());
             othersEmployeeList = saveMeetingPopulatorInstance.fillNotInvitedEmployeeList(saveMeetingRequest.getInvitedEmployeeList(), completeEmployeeList);
 
@@ -117,6 +124,7 @@ public class SaveMeetingServlet extends HttpServlet {
             disp.forward(request, response);
         } catch (SessionExpiredException sesExp) {
             log.error("SaveMeetingServlet - doPost - sessione expired!");
+            Validator.resetCounter();
             disp = request.getRequestDispatcher("login.jsp");
             request.setAttribute("error", sesExp.getMessage());
             disp.forward(request, response);
@@ -129,18 +137,21 @@ public class SaveMeetingServlet extends HttpServlet {
             disp.forward(request, response);
         } catch (EmployeeNotFoundException ex) {
             log.error("SaveMeetingServlet - doPost - EmployeeNotFoundException!");
+            Validator.resetCounter();
             session.invalidate();
             disp = request.getRequestDispatcher("login.jsp");
             request.setAttribute("error", ex.getMessage());
             disp.forward(request, response);
         } catch (ConstraintViolationException throwables) {
             log.error("SaveMeetingServlet - doPost - duplicate meeting exception!");
+            Validator.resetCounter();
             disp = request.getRequestDispatcher("personalpage.jsp");
             emptyUselessSessionAttribute(session);
             request.setAttribute("error", throwables.getMessage());
             disp.forward(request, response);
         }catch (SQLException genEx) {
             log.error("SaveMeetingServlet - doPost - something went wrong! See the stacktrace");
+            Validator.resetCounter();
             disp = request.getRequestDispatcher("login.jsp");
             request.setAttribute("error", genEx.getMessage());
             disp.forward(request, response);

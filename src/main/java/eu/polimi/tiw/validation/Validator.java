@@ -87,6 +87,14 @@ public class Validator {
 
     }
 
+    public static void resetCounter() {
+        badInvitedEmployeeCounter = 0;
+    }
+
+    public static void incrementCounter() {
+        badInvitedEmployeeCounter++;
+    }
+
 
 
     public static void validateSaveMeetingRequest(SaveMeetingRequest request, int involvedEmployeeNumber) throws InvalidEmployeeNumberException, MaximumNumberOfTryException {
@@ -103,7 +111,11 @@ public class Validator {
 
     }
 
-    private static void checkNumberOfWrongRequest(int badInvitedEmployeeCounter) throws MaximumNumberOfTryException {
+    public static int getCounter(){
+        return badInvitedEmployeeCounter;
+    }
+
+    public static void checkNumberOfWrongRequest(int badInvitedEmployeeCounter) throws MaximumNumberOfTryException {
         if(badInvitedEmployeeCounter > 2){
             badInvitedEmployeeCounter = 0;
             throw new MaximumNumberOfTryException("The maximum limit of incorrect requests has been reached. Please go back to the home page and try to insert a new request");

@@ -41,6 +41,7 @@ public class HomePageServlet extends HttpServlet {
 				throw new SessionExpiredException("Session has exipired please re-login");
 			}
 
+			Validator.resetCounter();
 			HomePageResponse homePageResponse = (HomePageResponse) session.getAttribute(MOConstants.USER_HOMEPAGE_DATA);
 			request.setAttribute("homePageResponse", homePageResponse);
 
